@@ -1,0 +1,102 @@
+{
+  "name": "tailscale",
+  "version": "0.1.0",
+  "description": "Tailscale network management via MCP — query devices, ACL, DNS, users, and API keys from Claude",
+  "author": { "name": "jmagar" },
+  "repository": "https://github.com/jmagar/rustscale",
+  "license": "MIT",
+  "keywords": [
+    "tailscale",
+    "mcp",
+    "vpn",
+    "homelab",
+    "tailnet"
+  ],
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "skills": "./skills",
+  "userConfig": {
+    "server_url": {
+      "type": "string",
+      "title": "Server URL",
+      "description": "Base URL the MCP client connects to. Keep the default http://localhost:7575 when running the server locally. Set to a remote URL (e.g. http://myhost:7575 or https://tailscale.example.com) when connecting to a server on another machine. Do NOT include a trailing /mcp path — the plugin appends it.",
+      "required": true,
+      "default": "http://localhost:7575"
+    },
+    "api_token": {
+      "type": "string",
+      "title": "API token",
+      "description": "Bearer token for MCP HTTP authentication, sent as `Authorization: Bearer <token>` on every request. Generate one with `openssl rand -hex 32` or `just gen-token`. The same token must be set as TAILSCALE_MCP_TOKEN on the server side.",
+      "sensitive": true,
+      "required": false
+    },
+    "no_auth": {
+      "type": "boolean",
+      "title": "Disable service auth",
+      "description": "Run the rustscale MCP server without bearer-token auth. Only safe when the server is bound to loopback (127.x.x.x) or an upstream gateway enforces auth before traffic reaches it.",
+      "required": true,
+      "default": false
+    },
+    "auth_mode": {
+      "type": "string",
+      "title": "Auth mode",
+      "description": "Server auth mode. bearer keeps the static API token only. oauth enables Google OAuth/JWT for clients like Codex while the generated API token is still accepted for this Claude Code plugin connection. OAuth mode requires public_url, google_client_id, google_client_secret, and auth_admin_email.",
+      "required": true,
+      "default": "bearer"
+    },
+    "public_url": {
+      "type": "string",
+      "title": "Public URL",
+      "description": "Public base URL for OAuth issuer/resource metadata, e.g. https://tailscale.example.com. Required when auth_mode=oauth. Leave blank to derive from an https server_url.",
+      "default": ""
+    },
+    "google_client_id": {
+      "type": "string",
+      "title": "Google OAuth client ID",
+      "description": "Google OAuth client ID used when auth_mode=oauth. Create a Web application OAuth client in Google Cloud Console.",
+      "sensitive": true,
+      "default": ""
+    },
+    "google_client_secret": {
+      "type": "string",
+      "title": "Google OAuth client secret",
+      "description": "Google OAuth client secret used when auth_mode=oauth. Stored in the plugin env file with mode 600.",
+      "sensitive": true,
+      "default": ""
+    },
+    "auth_admin_email": {
+      "type": "string",
+      "title": "OAuth admin email",
+      "description": "Bootstrap allowed Google account for OAuth mode. The server refuses to start OAuth without an allowlisted account.",
+      "default": ""
+    },
+    "use_docker": {
+      "type": "boolean",
+      "title": "Deploy with Docker",
+      "description": "Deployment method. True: run via the bundled docker compose stack (containerized, easier to upgrade). False: run the binary directly via a systemd user service. Both produce identical rustscale behavior.",
+      "required": true,
+      "default": false
+    },
+    "tailscale_api_key": {
+      "type": "string",
+      "title": "Tailscale API key",
+      "description": "Tailscale API key for the REST API. Create one at https://login.tailscale.com/admin/settings/keys. Stored as TAILSCALE_API_KEY in the plugin env file.",
+      "sensitive": true,
+      "required": true
+    },
+    "tailscale_tailnet": {
+      "type": "string",
+      "title": "Tailnet identifier",
+      "description": "Tailnet to query. Use \"-\" for personal accounts, or your org domain (e.g. example.com) for organization accounts.",
+      "required": true,
+      "default": "-"
+    },
+    "allow_destructive": {
+      "type": "boolean",
+      "title": "Allow destructive operations",
+      "description": "Enables the delete_device action on the server side. Even with this enabled, the caller must also pass confirm=true. Off by default to prevent accidental device deletion.",
+      "required": true,
+      "default": false
+    }
+  }
+}

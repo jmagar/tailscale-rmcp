@@ -1,0 +1,34 @@
+# rustscale configuration
+# Env vars (TAILSCALE_* prefix) override these values.
+# Required: TAILSCALE_API_KEY must be set (env var or uncommented below).
+
+[tailscale]
+# api_key = ""          # TAILSCALE_API_KEY — required
+# tailnet = "-"         # TAILSCALE_TAILNET — "-" for personal, "example.com" for org
+# allow_destructive = false  # TAILSCALE_ALLOW_DESTRUCTIVE
+
+[mcp]
+host = "0.0.0.0"
+port = 40040
+server_name = "rustscale"
+# api_token = ""        # TAILSCALE_MCP_TOKEN — static bearer token
+# no_auth = false       # TAILSCALE_MCP_NO_AUTH — loopback-only, disables all auth
+# allowed_hosts = []    # extra Host header values
+# allowed_origins = []  # extra CORS origins
+
+[mcp.auth]
+mode = "bearer"         # "bearer" or "oauth"
+# public_url = ""       # TAILSCALE_MCP_PUBLIC_URL — required for oauth
+# google_client_id = "" # TAILSCALE_MCP_GOOGLE_CLIENT_ID
+# google_client_secret = ""  # TAILSCALE_MCP_GOOGLE_CLIENT_SECRET
+admin_email = ""        # TAILSCALE_MCP_AUTH_ADMIN_EMAIL
+allowed_emails = []
+sqlite_path = "/data/auth.db"
+key_path = "/data/auth-jwt.pem"
+access_token_ttl_secs = 3600
+refresh_token_ttl_secs = 2592000
+auth_code_ttl_secs = 300
+register_rpm = 10
+authorize_rpm = 60
+disable_static_token_with_oauth = true
+allowed_client_redirect_uris = []

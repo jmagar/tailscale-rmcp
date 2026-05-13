@@ -1,0 +1,50 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "tv.tootie/rustscale",
+  "title": "Tailscale MCP",
+  "description": "MCP server for Tailscale networks — list devices, view ACLs, manage DNS, authorize and remove devices.",
+  "repository": {
+    "url": "https://github.com/jmagar/rustscale",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/jmagar/rustscale:0.1.0",
+      "version": "0.1.0",
+      "environmentVariables": [
+        {
+          "name": "TAILSCALE_API_KEY",
+          "description": "Tailscale API key. Create one at https://login.tailscale.com/admin/settings/keys.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "TAILSCALE_TAILNET",
+          "description": "Tailnet to query. Use \"-\" for personal accounts or your org domain (e.g. example.com). Defaults to \"-\".",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "TAILSCALE_ALLOW_DESTRUCTIVE",
+          "description": "Set to \"true\" to enable the delete_device action. Even when set, callers must also pass confirm=true. Defaults to false.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "TAILSCALE_MCP_TOKEN",
+          "description": "Static bearer token for MCP endpoint authentication. Generate with: openssl rand -hex 32.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://rustscale.tootie.tv/mcp"
+    }
+  ]
+}

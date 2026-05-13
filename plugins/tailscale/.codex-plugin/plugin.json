@@ -1,0 +1,41 @@
+{
+  "name": "rustscale",
+  "version": "0.1.0",
+  "description": "Tailscale network management via MCP — query devices, ACL, DNS, users, and API keys.",
+  "homepage": "https://github.com/jmagar/rustscale",
+  "repository": "https://github.com/jmagar/rustscale",
+  "license": "MIT",
+  "keywords": [
+    "tailscale",
+    "mcp",
+    "vpn",
+    "homelab",
+    "tailnet",
+    "networking"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Tailscale MCP",
+    "shortDescription": "Query and manage your Tailscale network",
+    "longDescription": "Bridges Claude to the Tailscale REST API via MCP. Exposes read access to devices, ACL policy, DNS configuration, API keys, and users. Supports authorizing new devices (write) and removing devices (destructive, requires explicit confirmation). Tailnet-scoped; one server instance per Tailscale account.",
+    "developerName": "Jacob Magar",
+    "category": "Infrastructure",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/jmagar/rustscale",
+    "defaultPrompt": [
+      "List all devices in my Tailscale network.",
+      "Show the ACL policy for my tailnet.",
+      "What is the current DNS configuration for my Tailscale network?"
+    ],
+    "brandColor": "#0F172A"
+  },
+  "author": {
+    "name": "Jacob Magar",
+    "email": "jmagar@users.noreply.github.com",
+    "url": "https://github.com/jmagar"
+  }
+}

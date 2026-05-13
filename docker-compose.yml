@@ -1,0 +1,40 @@
+services:
+  tailscale-mcp:
+    # Default to the published image so plugin deploys can `docker compose pull`
+    # without source. Override with `docker compose build` for local source dev.
+    # Service is named tailscale-mcp (not tailscale) to avoid conflicting with
+    # the Tailscale daemon / tailscaled container that may run on the same host.
+    image: ghcr.io/jmagar/rustscale:${RUSTSCALE_VERSION:-latest}
+    build:
+      context: .
+      dockerfile: config/Dockerfile
+    container_name: tailscale-mcp
+    restart: unless-stopped
+    user: "${TAILSCALE_UID:-1000}:${TAILSCALE_GID:-1000}"
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "${TAILSCALE_MCP_PORT:-40040}:40040/tcp"
+    volumes:
+      - ${HOME}/.tailscale-mcp:/data
+    networks:
+      - jakenet
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:40040/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+
+networks:
+  jakenet:
+    name: ${DOCKER_NETWORK:-jakenet}
+    external: true
