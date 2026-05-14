@@ -1,8 +1,9 @@
 {
   "name": "tailscale",
-  "version": "0.1.0",
-  "description": "Tailscale network management via MCP — query devices, ACL, DNS, users, and API keys from Claude",
-  "author": { "name": "jmagar" },
+  "description": "Tailscale network management via MCP \u2014 query devices, ACL, DNS, users, and API keys from Claude",
+  "author": {
+    "name": "jmagar"
+  },
   "repository": "https://github.com/jmagar/rustscale",
   "license": "MIT",
   "keywords": [
@@ -19,7 +20,7 @@
     "server_url": {
       "type": "string",
       "title": "Server URL",
-      "description": "Base URL the MCP client connects to. Keep the default http://localhost:7575 when running the server locally. Set to a remote URL (e.g. http://myhost:7575 or https://tailscale.example.com) when connecting to a server on another machine. Do NOT include a trailing /mcp path — the plugin appends it.",
+      "description": "Base URL the MCP client connects to. Keep the default http://localhost:7575 when running the server locally. Set to a remote URL (e.g. http://myhost:7575 or https://tailscale.example.com) when connecting to a server on another machine. Do NOT include a trailing /mcp path \u2014 the plugin appends it.",
       "required": true,
       "default": "http://localhost:7575"
     },
