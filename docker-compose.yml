@@ -13,6 +13,6 @@ services:
       dockerfile: config/Dockerfile
 
 networks:
-  jakenet:
-    name: ${DOCKER_NETWORK:-jakenet}
+  rustscale:
+    name: ${DOCKER_NETWORK:-rustscale}
     external: true
