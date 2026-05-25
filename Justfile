@@ -84,18 +84,12 @@ gen-token:
 
 
 validate-skills:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    found=0
-    for dir in plugins/tailscale/skills/*; do
-      [[ -d "$dir" ]] || continue
-      found=1
-      test -f "$dir/SKILL.md" || { echo "MISSING: $dir/SKILL.md"; exit 1; }
-      grep -q '^name:' "$dir/SKILL.md" || { echo "MISSING name: $dir/SKILL.md"; exit 1; }
-      grep -q '^description:' "$dir/SKILL.md" || { echo "MISSING description: $dir/SKILL.md"; exit 1; }
-    done
-    [[ "$found" -eq 1 ]] || { echo "MISSING: plugins/tailscale/skills/*"; exit 1; }
-    echo "OK"
+    bash scripts/validate-plugin-layout.sh
+
+validate-plugin: validate-skills
+
+runtime-current:
+    bash scripts/check-runtime-current.sh --unit tailscale-mcp.service --service tailscale-mcp --expected-binary target/release/tailscale
 
 # Run the mcporter integration smoke-test (requires running server + mcporter in PATH)
 test-mcporter:
@@ -139,7 +133,9 @@ build-plugin: release
     if [ ! -x "$target_dir/release/tailscale" ] && [ -x ".cache/cargo/release/tailscale" ]; then
       target_dir=".cache/cargo"
     fi
+    mkdir -p bin plugins/tailscale/bin
     install -m 755 "$target_dir/release/tailscale" bin/tailscale
+    install -m 755 "$target_dir/release/tailscale" plugins/tailscale/bin/tailscale
 
 # Publish: bump version, tag, push (triggers crates.io + Docker publish)
 publish bump="patch":

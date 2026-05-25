@@ -39,14 +39,15 @@ ensure_tailscale_binary() {
     return 0
   fi
 
-  local repo_root="${CLAUDE_PLUGIN_ROOT}/../.."
-  if [[ -f "${repo_root}/Cargo.toml" ]] && command -v cargo >/dev/null 2>&1; then
-    (cd "${repo_root}" && cargo build --release)
-    export PATH="${repo_root}/target/release:${PATH}"
+  local bundled="${CLAUDE_PLUGIN_ROOT}/bin/tailscale"
+  if [[ -x "${bundled}" ]]; then
+    mkdir -p "${HOME}/.local/bin"
+    ln -sf "${bundled}" "${HOME}/.local/bin/tailscale"
+    export PATH="${HOME}/.local/bin:${PATH}"
   fi
 
   command -v tailscale >/dev/null 2>&1 || {
-    printf 'tailscale plugin setup: tailscale binary not found in PATH\n' >&2
+    printf 'tailscale plugin setup: tailscale binary not found on PATH or at %s\n' "${bundled}" >&2
     exit 1
   }
 }
