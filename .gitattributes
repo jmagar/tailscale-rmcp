@@ -3,3 +3,5 @@ bin/tailscale filter=lfs diff=lfs merge=lfs -text
 bin/tailscale.exe filter=lfs diff=lfs merge=lfs -text
 *.tar.gz filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
+bin/* filter=lfs diff=lfs merge=lfs -text
+plugins/*/bin/* filter=lfs diff=lfs merge=lfs -text
