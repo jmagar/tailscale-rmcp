@@ -11,9 +11,6 @@ const APPDATA_ENV: &str = "TAILSCALE_MCP_HOME";
 pub enum SetupCommand {
     Check,
     Repair,
-    /// Copy this binary into ~/.local/bin so it is callable as a bare command
-    /// in the user's own terminal, independent of Claude Code.
-    Install,
     PluginHook { no_repair: bool },
 }
 
@@ -29,7 +26,6 @@ impl SetupCommand {
         let command = match rest.as_slice() {
             ["setup", "check"] => Self::Check,
             ["setup", "repair"] => Self::Repair,
-            ["setup", "install"] => Self::Install,
             ["setup", "plugin-hook"] => Self::PluginHook { no_repair: false },
             ["setup", "plugin-hook", "--no-repair"] => Self::PluginHook { no_repair: true },
             ["setup", ..] => bail!("unknown setup command: {}", rest.join(" ")),
@@ -93,11 +89,6 @@ pub fn run(command: SetupCommand, json: bool) -> Result<()> {
             print_setup_report(&report, json)?;
             fail_if_setup_failed(&report)
         }
-        SetupCommand::Install => {
-            let dest = install_self()?;
-            println!("installed {BINARY_NAME} -> {}", dest.display());
-            Ok(())
-        }
         SetupCommand::PluginHook { no_repair } => {
             let report = plugin_hook_report(no_repair)?;
             print_plugin_hook_report(&report, json)?;
@@ -112,57 +103,7 @@ pub fn run(command: SetupCommand, json: bool) -> Result<()> {
     }
 }
 
-/// Copy the running binary into `~/.local/bin/<name>` so it is callable as a
-/// bare command in the user's own terminal, independent of Claude Code.
-///
-/// Uses the running executable's own file name as the destination, so this is
-/// identical across every server repo. Copy (not symlink) so it survives
-/// `/plugin update`, which changes the plugin cache path a symlink would dangle
-/// to. Atomic via temp + rename; idempotent; depends only on std + anyhow.
-fn install_self() -> Result<PathBuf> {
-    let exe = std::env::current_exe()?;
-    let name = exe
-        .file_name()
-        .ok_or_else(|| anyhow::anyhow!("cannot determine binary name from {}", exe.display()))?;
-    let home = std::env::var_os("HOME").ok_or_else(|| anyhow::anyhow!("HOME is not set"))?;
-    let bin_dir = PathBuf::from(home).join(".local").join("bin");
-    std::fs::create_dir_all(&bin_dir)?;
-    let dest = bin_dir.join(name);
-
-    // Running the already-installed copy: nothing to do.
-    if dest == exe {
-        return Ok(dest);
-    }
-
-    let tmp = bin_dir.join(format!(".{}.tmp", name.to_string_lossy()));
-    std::fs::copy(&exe, &tmp)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(&tmp, std::fs::Permissions::from_mode(0o755))?;
-    }
-    std::fs::rename(&tmp, &dest).inspect_err(|_| {
-        let _ = std::fs::remove_file(&tmp);
-    })?;
-
-    let on_path = std::env::var_os("PATH")
-        .map(|p| std::env::split_paths(&p).any(|d| d == bin_dir))
-        .unwrap_or(false);
-    if !on_path {
-        eprintln!(
-            "note: {} is not on your PATH; add:  export PATH=\"$HOME/.local/bin:$PATH\"",
-            bin_dir.display()
-        );
-    }
-    Ok(dest)
-}
-
 fn plugin_hook_report(no_repair: bool) -> Result<PluginHookReport> {
-    // Keep the user's terminal copy in ~/.local/bin fresh each session so it
-    // survives `/plugin update`. Best-effort: never fail the hook over it.
-    if let Err(e) = install_self() {
-        eprintln!("{BINARY_NAME} setup plugin-hook: self-install skipped: {e}");
-    }
     let check = check_report();
     let repair = if no_repair || setup_ok(&check) {
         None
