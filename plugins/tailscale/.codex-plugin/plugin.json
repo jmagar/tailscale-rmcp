@@ -1,6 +1,6 @@
 {
   "name": "rustscale",
-  "description": "Tailscale network management via MCP \u2014 query devices, ACL, DNS, users, and API keys.",
+  "description": "Tailscale network management via MCP — query devices, ACL, DNS, users, and API keys.",
   "homepage": "https://github.com/jmagar/rustscale",
   "repository": "https://github.com/jmagar/rustscale",
   "license": "MIT",
@@ -13,7 +13,6 @@
     "networking"
   ],
   "skills": "./skills/",
-  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Tailscale MCP",
     "shortDescription": "Query and manage your Tailscale network",
