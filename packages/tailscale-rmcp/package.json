@@ -1,0 +1,38 @@
+{
+  "name": "tailscale-rmcp",
+  "version": "0.1.1",
+  "description": "Node launcher for the tailscale-rmcp Rust MCP server and rtailscale CLI binary.",
+  "license": "MIT",
+  "homepage": "https://github.com/jmagar/tailscale-rmcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmagar/tailscale-rmcp.git",
+    "directory": "packages/tailscale-rmcp"
+  },
+  "bugs": {
+    "url": "https://github.com/jmagar/tailscale-rmcp/issues"
+  },
+  "bin": {
+    "tailscale-rmcp": "bin/rtailscale.js",
+    "rtailscale": "bin/rtailscale.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "scripts/",
+    "README.md"
+  ],
+  "scripts": {
+    "postinstall": "node scripts/install.js",
+    "test": "node --test",
+    "check": "node --check bin/rtailscale.js && node --check scripts/install.js && node --check lib/platform.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "tailscale",
+    "network"
+  ]
+}

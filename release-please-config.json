@@ -63,9 +63,12 @@
   ],
   "packages": {
     ".": {
-      "package-name": "rustscale",
-      "component": "rustscale",
-      "changelog-path": "CHANGELOG.md"
+      "package-name": "tailscale-rmcp",
+      "component": "tailscale-rmcp",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        "packages/tailscale-rmcp/package.json"
+      ]
     }
   }
 }

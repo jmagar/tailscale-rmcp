@@ -1,8 +1,43 @@
-# rustscale — Tailscale MCP Server
+# tailscale-rmcp — Tailscale MCP Server
 
-`rustscale` is a Rust binary named `tailscale` that bridges Claude (and any MCP client) to the [Tailscale REST API](https://api.tailscale.com/api/v2) via the Model Context Protocol.
+`tailscale-rmcp` is a Rust MCP server with the CLI/bin alias `rtailscale`. It bridges Claude (and any MCP client) to the [Tailscale REST API](https://api.tailscale.com/api/v2) via the Model Context Protocol.
 
 It exposes a single MCP tool called `tailscale` with an `action` parameter. Actions cover reading device/network state, authorizing devices, and (with explicit opt-in) deleting devices.
+
+## Naming pattern
+
+This repo follows the rmcp family naming pattern:
+
+| Surface | Pattern | This repo |
+| --- | --- | --- |
+| Repository | `<service>-rmcp` | `tailscale-rmcp` |
+| npm package | `<service>-rmcp` | `tailscale-rmcp` |
+| CLI/bin alias | `r<service>` | `rtailscale` |
+
+The environment prefix remains `TAILSCALE_RMCP` for server/runtime settings.
+
+## npm / npx
+
+Run the stdio MCP server or CLI without a manual binary install:
+
+```bash
+npx -y tailscale-rmcp --help
+```
+
+MCP clients can use the same launcher:
+
+```json
+{
+  "mcpServers": {
+    "tailscale": {
+      "command": "npx",
+      "args": ["-y", "tailscale-rmcp"]
+    }
+  }
+}
+```
+
+The npm package downloads the `rtailscale` binary from GitHub Releases during `postinstall` and keeps the release tag aligned with `packages/tailscale-rmcp/package.json`.
 
 ## What is a tailnet?
 
@@ -30,7 +65,7 @@ export TAILSCALE_MCP_TOKEN="$(openssl rand -hex 32)"
 ### 3. Run as stdio MCP server (Claude Desktop)
 
 ```bash
-tailscale mcp
+rtailscale mcp
 ```
 
 Add to `claude_desktop_config.json`:
@@ -39,7 +74,7 @@ Add to `claude_desktop_config.json`:
 {
   "mcpServers": {
     "tailscale": {
-      "command": "/path/to/tailscale",
+      "command": "/path/to/rtailscale",
       "args": ["mcp"],
       "env": {
         "TAILSCALE_API_KEY": "tskey-api-...",
@@ -53,7 +88,7 @@ Add to `claude_desktop_config.json`:
 ### 4. Run as Streamable HTTP MCP server
 
 ```bash
-tailscale serve
+rtailscale serve
 ```
 
 The server starts on `0.0.0.0:7575`. Connect your MCP client to `http://localhost:7575/mcp` with `Authorization: Bearer <your-token>`.
@@ -105,15 +140,15 @@ The `id` parameter accepts either the stable **node ID** (e.g. `n1234abc`) or th
 The binary also works as a direct CLI against your tailnet:
 
 ```bash
-tailscale devices [--json]
-tailscale device <id> [--json]
-tailscale routes <device-id> [--json]
-tailscale keys [--json]
-tailscale acl [--json]
-tailscale dns [--json]
-tailscale users [--json]
-tailscale authorize <device-id> [--json]
-tailscale delete-device <device-id> --confirm [--json]
+rtailscale devices [--json]
+rtailscale device <id> [--json]
+rtailscale routes <device-id> [--json]
+rtailscale keys [--json]
+rtailscale acl [--json]
+rtailscale dns [--json]
+rtailscale users [--json]
+rtailscale authorize <device-id> [--json]
+rtailscale delete-device <device-id> --confirm [--json]
 ```
 
 All commands print pretty-printed JSON.
@@ -125,7 +160,7 @@ All commands print pretty-printed JSON.
 Set `TAILSCALE_MCP_TOKEN` to a static secret. MCP clients authenticate with `Authorization: Bearer <token>`.
 
 ```bash
-TAILSCALE_MCP_TOKEN="$(openssl rand -hex 32)" tailscale serve
+TAILSCALE_MCP_TOKEN="$(openssl rand -hex 32)" rtailscale serve
 ```
 
 ### OAuth (Google)
@@ -138,7 +173,7 @@ TAILSCALE_MCP_PUBLIC_URL=https://tailscale.example.com \
 TAILSCALE_MCP_GOOGLE_CLIENT_ID=... \
 TAILSCALE_MCP_GOOGLE_CLIENT_SECRET=... \
 TAILSCALE_MCP_AUTH_ADMIN_EMAIL=admin@example.com \
-tailscale serve
+rtailscale serve
 ```
 
 ### Loopback / no-auth
@@ -149,8 +184,8 @@ Binding to `127.*` or setting `TAILSCALE_MCP_NO_AUTH=true` disables all auth. Su
 
 | Mode | Command | MCP endpoint |
 |------|---------|-------------|
-| stdio | `tailscale mcp` | stdin / stdout |
-| Streamable HTTP | `tailscale serve` | `http://<host>:<port>/mcp` |
+| stdio | `rtailscale mcp` | stdin / stdout |
+| Streamable HTTP | `rtailscale serve` | `http://<host>:<port>/mcp` |
 
 ## Environment variables
 
@@ -175,7 +210,7 @@ Binding to `127.*` or setting `TAILSCALE_MCP_NO_AUTH=true` disables all auth. Su
 ## Build
 
 ```bash
-cargo build --release          # produces target/release/tailscale
+cargo build --release          # produces target/release/rtailscale
 cargo test                     # run test suite
 cargo clippy -- -D warnings    # lint
 cargo fmt                      # format
