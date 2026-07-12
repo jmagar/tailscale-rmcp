@@ -1,7 +1,7 @@
 {
   "name": "tailscale-rmcp",
   "version": "0.1.2",
-  "description": "Node launcher for the tailscale-rmcp Rust MCP server and rtailscale CLI binary.",
+  "description": "Node launcher for the Tailscale Rust MCP server and rtailscale CLI for tailnet operations.",
   "license": "MIT",
   "homepage": "https://github.com/jmagar/tailscale-rmcp#readme",
   "repository": {
@@ -32,7 +32,22 @@
   },
   "keywords": [
     "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "rmcp",
+    "rust",
     "tailscale",
-    "network"
+    "tailnet",
+    "vpn",
+    "networking",
+    "device-management",
+    "homelab",
+    "cli",
+    "claude-code",
+    "codex",
+    "gemini",
+    "automation",
+    "oauth",
+    "http-server"
   ]
 }
