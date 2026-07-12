@@ -103,7 +103,7 @@ tailscale(action="delete_device", id="nXXXXXXXXXXXXX", confirm=True)
 
 ## Tier 2 — CLI Binary (fall back when MCP is unavailable)
 
-Binary: `/home/jmagar/workspace/rustscale/target/release/rtailscale`  
+Binary: `/home/jmagar/workspace/tailscale-rmcp/target/release/rtailscale`
 All commands accept `--json` / `-j` for machine-readable JSON output.
 
 ```bash

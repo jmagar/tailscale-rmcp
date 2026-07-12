@@ -2,7 +2,7 @@
   "mcpServers": {
     "tailscale": {
       "command": "npx",
-      "args": ["-y", "tailscale-rmcp"],
+      "args": ["-y", "tailscale-rmcp", "mcp"],
       "env": {
         "TAILSCALE_API_KEY": "${user_config.tailscale_api_key}",
         "TAILSCALE_TAILNET": "${user_config.tailscale_tailnet}",

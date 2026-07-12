@@ -1,8 +1,8 @@
 {
   "name": "rustscale",
   "description": "Tailscale network management via MCP — query devices, ACL, DNS, users, and API keys.",
-  "homepage": "https://github.com/jmagar/rustscale",
-  "repository": "https://github.com/jmagar/rustscale",
+  "homepage": "https://github.com/jmagar/tailscale-rmcp",
+  "repository": "https://github.com/jmagar/tailscale-rmcp",
   "license": "MIT",
   "keywords": [
     "tailscale",
@@ -23,7 +23,7 @@
       "Read",
       "Write"
     ],
-    "websiteURL": "https://github.com/jmagar/rustscale",
+    "websiteURL": "https://github.com/jmagar/tailscale-rmcp",
     "defaultPrompt": [
       "List all devices in my Tailscale network.",
       "Show the ACL policy for my tailnet.",

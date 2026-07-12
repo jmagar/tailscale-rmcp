@@ -6,7 +6,7 @@ services:
     extends:
       file: docker-compose.prod.yml
       service: tailscale-mcp
-    image: rustscale:dev
+    image: tailscale-rmcp:dev
     pull_policy: build
     build:
       context: .

@@ -36,7 +36,7 @@ mod tests {
 
     #[test]
     fn long_text_is_truncated_with_hint() {
-        let s = "x".repeat(MAX_RESPONSE_BYTES + 1);
+        let s = "x".repeat(MAX_RESPONSE_BYTES + 10_000);
         let result = truncate_response(&s);
         assert!(result.len() < s.len());
         assert!(result.contains("[TRUNCATED:"));

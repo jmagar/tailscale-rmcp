@@ -192,38 +192,37 @@ async fn resolve_auth_policy(config: &Config) -> Result<AuthPolicy> {
 fn print_usage() {
     eprintln!(
         "Usage:
-  tailscale [serve]                     Start MCP HTTP server (port 40040)
-  tailscale mcp                         Start MCP stdio transport
-  tailscale doctor [--json]             Validate environment before starting
-  tailscale setup check [--json]        Check local plugin setup
-  tailscale setup repair [--json]       Repair local plugin setup
-  tailscale setup plugin-hook [--no-repair] [--json]
+  rtailscale [serve]                     Start MCP HTTP server (port 40040)
+  rtailscale mcp                         Start MCP stdio transport
+  rtailscale doctor [--json]             Validate environment before starting
+  rtailscale setup check [--json]        Check local plugin setup
+  rtailscale setup repair [--json]       Repair local plugin setup
+  rtailscale setup plugin-hook [--no-repair] [--json]
 
 Read:
-  tailscale devices [--json]            All devices in the tailnet
-  tailscale device <id> [--json]        Single device details
-  tailscale routes <device-id> [--json] Subnet routes for a device
-  tailscale keys [--json]               API keys in the tailnet
-  tailscale acl [--json]                ACL policy
-  tailscale dns [--json]                DNS nameservers, search paths, preferences
-  tailscale users [--json]              Users in the tailnet
+  rtailscale devices [--json]            All devices in the tailnet
+  rtailscale device <id> [--json]        Single device details
+  rtailscale routes <device-id> [--json] Subnet routes for a device
+  rtailscale keys [--json]               API keys in the tailnet
+  rtailscale acl [--json]                ACL policy
+  rtailscale dns [--json]                DNS nameservers, search paths, preferences
+  rtailscale users [--json]              Users in the tailnet
 
 Write:
-  tailscale authorize <device-id> [--json]                    Authorize a device
+  rtailscale authorize <device-id> [--json]                    Authorize a device
 
 Destructive (requires TAILSCALE_ALLOW_DESTRUCTIVE=true):
-  tailscale delete-device <device-id> --confirm [--json]      Delete a device
+  rtailscale delete-device <device-id> --confirm [--json]      Delete a device
 
-NOTE: The binary name 'tailscale' conflicts with the real Tailscale CLI.
-  If both are installed, run install.sh with BINARY_NAME=tailscale-mcp to use
-  an alternative name that does not shadow the Tailscale CLI.
+NOTE: This repo ships the binary name 'rtailscale' to avoid conflicting with
+  the official Tailscale CLI named 'tailscale'.
 
 Environment:
   TAILSCALE_API_KEY                 Tailscale API key (required)
   TAILSCALE_TAILNET                 Tailnet: org domain or '-' for personal (default: -)
   TAILSCALE_ALLOW_DESTRUCTIVE       Enable delete-device (default: false)
   TAILSCALE_MCP_HOST                Bind host (default: 0.0.0.0)
-  TAILSCALE_MCP_PORT                Bind port (default: 7575)
+  TAILSCALE_MCP_PORT                Bind port (default: 40040)
   TAILSCALE_MCP_NO_AUTH             Disable auth (loopback only)
   TAILSCALE_MCP_TOKEN               Static bearer token
   TAILSCALE_MCP_AUTH_MODE           'bearer' (default) or 'oauth'

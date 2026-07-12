@@ -4,7 +4,7 @@
   "author": {
     "name": "jmagar"
   },
-  "repository": "https://github.com/jmagar/rustscale",
+  "repository": "https://github.com/jmagar/tailscale-rmcp",
   "license": "MIT",
   "keywords": [
     "tailscale",
@@ -18,9 +18,9 @@
     "server_url": {
       "type": "string",
       "title": "Server URL",
-      "description": "Base URL the MCP client connects to. Keep the default http://localhost:7575 when running the server locally. Set to a remote URL (e.g. http://myhost:7575 or https://tailscale.example.com) when connecting to a server on another machine. Do NOT include a trailing /mcp path — the plugin appends it.",
+      "description": "Base URL the MCP client connects to. Keep the default http://localhost:40040 when running the server locally. Set to a remote URL (e.g. http://myhost:40040 or https://tailscale.example.com) when connecting to a server on another machine. Do NOT include a trailing /mcp path — the plugin appends it.",
       "required": true,
-      "default": "http://localhost:7575"
+      "default": "http://localhost:40040"
     },
     "api_token": {
       "type": "string",
