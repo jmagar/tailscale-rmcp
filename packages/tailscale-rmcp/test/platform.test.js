@@ -3,12 +3,13 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const {
+  binaryVersion,
   downloadUrl,
   releaseBaseUrl,
   releaseVersion,
   targetFor,
 } = require("../lib/platform");
-const { version: packageVersion } = require("../package.json");
+const { binaryVersion: pinnedBinaryVersion } = require("../package.json");
 
 test("maps supported platforms to release assets", () => {
   assert.deepEqual(targetFor("linux", "x64"), {
@@ -25,8 +26,9 @@ test("rejects unsupported platforms", () => {
   assert.throws(() => targetFor("darwin", "arm64"), /Unsupported platform/);
 });
 
-test("uses npm package version as the binary tag by default", () => {
-  assert.equal(releaseVersion({}), `v${packageVersion}`);
+test("uses pinned binary version as the binary tag by default", () => {
+  assert.equal(binaryVersion(), pinnedBinaryVersion);
+  assert.equal(releaseVersion({}), `v${pinnedBinaryVersion}`);
 });
 
 test("allows release tag and repo overrides", () => {

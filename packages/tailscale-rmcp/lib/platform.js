@@ -6,6 +6,10 @@ function packageVersion() {
   return require("../package.json").version;
 }
 
+function binaryVersion() {
+  return require("../package.json").binaryVersion || packageVersion();
+}
+
 function targetFor(platform = process.platform, arch = process.arch) {
   if (platform === "linux" && arch === "x64") {
     return {
@@ -25,7 +29,7 @@ function targetFor(platform = process.platform, arch = process.arch) {
 }
 
 function releaseVersion(env = process.env) {
-  const raw = env.TAILSCALE_RMCP_BINARY_VERSION || env.TAILSCALE_RMCP_VERSION || packageVersion();
+  const raw = env.TAILSCALE_RMCP_BINARY_VERSION || env.TAILSCALE_RMCP_VERSION || binaryVersion();
   return raw.startsWith("v") ? raw : `v${raw}`;
 }
 
@@ -48,6 +52,7 @@ function binaryPath(platform = process.platform, arch = process.arch) {
 }
 
 module.exports = {
+  binaryVersion,
   binaryPath,
   downloadUrl,
   releaseBaseUrl,
