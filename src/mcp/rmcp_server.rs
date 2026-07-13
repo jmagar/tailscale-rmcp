@@ -16,7 +16,7 @@ use rmcp::{
 };
 use serde_json::{Map, Value};
 
-use crate::config::McpConfig;
+use crate::{config::McpConfig, tailscale::TailscaleApiError};
 
 use super::{prompts, schemas::tool_definitions, tools::execute_tool, AppState, AuthPolicy};
 
@@ -114,9 +114,7 @@ impl ServerHandler for TailscaleRmcpServer {
                     error = %error,
                     "MCP tool execution failed"
                 );
-                Ok(CallToolResult::error(vec![Content::text(format!(
-                    "Tool execution failed for action '{action}'. Check server logs for details."
-                ))]))
+                Ok(tool_error_result(&action, &error))
             }
         }
     }
@@ -268,6 +266,64 @@ fn tool_result_from_json(value: Value) -> Result<CallToolResult, ErrorData> {
     let text = serde_json::to_string_pretty(&value)
         .map_err(|e| ErrorData::internal_error(format!("serialization error: {e}"), None))?;
     Ok(CallToolResult::success(vec![Content::text(text)]))
+}
+
+fn tool_error_result(action: &str, error: &anyhow::Error) -> CallToolResult {
+    if let Some(api_error) = error.downcast_ref::<TailscaleApiError>() {
+        return api_error_tool_result(action, api_error);
+    }
+
+    CallToolResult::error(vec![Content::text(format!(
+        "Tool execution failed for action '{action}'. Check server logs for details."
+    ))])
+}
+
+fn api_error_tool_result(action: &str, error: &TailscaleApiError) -> CallToolResult {
+    structured_error_result(
+        action,
+        error.code,
+        error.status.as_u16(),
+        &error.message,
+        error.hint.as_deref(),
+        non_empty(error.body.as_str()),
+    )
+}
+
+fn structured_error_result(
+    action: &str,
+    code: &str,
+    status: u16,
+    message: &str,
+    hint: Option<&str>,
+    body: Option<&str>,
+) -> CallToolResult {
+    let mut error = Map::new();
+    error.insert("code".to_string(), Value::String(code.to_string()));
+    error.insert("message".to_string(), Value::String(message.to_string()));
+    error.insert("status".to_string(), Value::from(status));
+    error.insert("action".to_string(), Value::String(action.to_string()));
+    error.insert(
+        "upstream".to_string(),
+        Value::String("tailscale".to_string()),
+    );
+    if let Some(hint) = hint {
+        error.insert("hint".to_string(), Value::String(hint.to_string()));
+    }
+    if let Some(body) = body {
+        error.insert("body".to_string(), Value::String(body.to_string()));
+    }
+
+    let mut payload = Map::new();
+    payload.insert("error".to_string(), Value::Object(error));
+
+    let mut result = CallToolResult::structured_error(Value::Object(payload));
+    result.content = vec![Content::text(message.to_string())];
+    result
+}
+
+fn non_empty(value: &str) -> Option<&str> {
+    let value = value.trim();
+    (!value.is_empty()).then_some(value)
 }
 
 // ── auth helpers ──────────────────────────────────────────────────────────────
@@ -463,4 +519,39 @@ fn extract_origin(url: &str) -> Option<String> {
         _ => format!("{scheme}://{host}"),
     };
     Some(origin)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn api_not_found_errors_return_structured_mcp_error() {
+        let error = anyhow::Error::new(TailscaleApiError {
+            status: reqwest::StatusCode::NOT_FOUND,
+            code: "not_found",
+            message: "Device not found".to_string(),
+            hint: Some("check the device ID".to_string()),
+            body: r#"{"message":"missing"}"#.to_string(),
+        });
+        let result = tool_error_result("device", &error);
+
+        assert_eq!(result.is_error, Some(true));
+        let text = result
+            .content
+            .first()
+            .and_then(|content| content.as_text())
+            .map(|text| text.text.as_str());
+        assert_eq!(text, Some("Device not found"));
+
+        let structured = result
+            .structured_content
+            .as_ref()
+            .expect("API errors should include structured content");
+        assert_eq!(structured["error"]["code"], "not_found");
+        assert_eq!(structured["error"]["status"], 404);
+        assert_eq!(structured["error"]["action"], "device");
+        assert_eq!(structured["error"]["hint"], "check the device ID");
+        assert_eq!(structured["error"]["body"], r#"{"message":"missing"}"#);
+    }
 }

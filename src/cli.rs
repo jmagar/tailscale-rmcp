@@ -1,6 +1,6 @@
 use std::{
     net::TcpListener,
-    path::PathBuf,
+    path::{Path, PathBuf},
     time::{Duration, Instant},
 };
 
@@ -191,7 +191,7 @@ impl DoctorCheck {
 
 // ── individual checks ─────────────────────────────────────────────────────────
 
-fn check_config_file(data_dir: &PathBuf) -> DoctorCheck {
+fn check_config_file(data_dir: &Path) -> DoctorCheck {
     let p = data_dir.join("config.toml");
     if p.exists() {
         DoctorCheck::pass("config", "Config file", p.display().to_string())
@@ -204,7 +204,7 @@ fn check_config_file(data_dir: &PathBuf) -> DoctorCheck {
     }
 }
 
-fn check_dir_writable(category: &'static str, label: &str, dir: &PathBuf) -> DoctorCheck {
+fn check_dir_writable(category: &'static str, label: &str, dir: &Path) -> DoctorCheck {
     match std::fs::create_dir_all(dir) {
         Ok(_) => {}
         Err(e) => {
@@ -237,7 +237,7 @@ fn check_dir_writable(category: &'static str, label: &str, dir: &PathBuf) -> Doc
     }
 }
 
-fn dir_size_human(dir: &PathBuf) -> String {
+fn dir_size_human(dir: &Path) -> String {
     // Best-effort directory size via du. Silently returns empty on failure.
     let output = std::process::Command::new("du")
         .args(["-sh", "--"])
