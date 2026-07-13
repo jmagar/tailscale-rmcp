@@ -263,9 +263,12 @@ fn rmcp_tool_from_json(value: Value) -> Result<Tool, ErrorData> {
 }
 
 fn tool_result_from_json(value: Value) -> Result<CallToolResult, ErrorData> {
-    let text = serde_json::to_string_pretty(&value)
+    let envelope = success_envelope(value);
+    let text = serde_json::to_string_pretty(&envelope)
         .map_err(|e| ErrorData::internal_error(format!("serialization error: {e}"), None))?;
-    Ok(CallToolResult::success(vec![Content::text(text)]))
+    let mut result = CallToolResult::success(vec![Content::text(text)]);
+    result.structured_content = Some(envelope);
+    Ok(result)
 }
 
 fn tool_error_result(action: &str, error: &anyhow::Error) -> CallToolResult {
@@ -273,9 +276,9 @@ fn tool_error_result(action: &str, error: &anyhow::Error) -> CallToolResult {
         return api_error_tool_result(action, api_error);
     }
 
-    CallToolResult::error(vec![Content::text(format!(
-        "Tool execution failed for action '{action}'. Check server logs for details."
-    ))])
+    let message =
+        format!("Tool execution failed for action '{action}'. Check server logs for details.");
+    structured_error_result(action, "tool_execution_failed", 500, &message, None, None)
 }
 
 fn api_error_tool_result(action: &str, error: &TailscaleApiError) -> CallToolResult {
@@ -313,12 +316,28 @@ fn structured_error_result(
         error.insert("body".to_string(), Value::String(body.to_string()));
     }
 
-    let mut payload = Map::new();
-    payload.insert("error".to_string(), Value::Object(error));
+    let payload = error_envelope(Value::Object(error));
+    let text = serde_json::to_string_pretty(&payload).unwrap_or_else(|_| message.to_string());
 
-    let mut result = CallToolResult::structured_error(Value::Object(payload));
-    result.content = vec![Content::text(message.to_string())];
+    let mut result = CallToolResult::structured_error(payload);
+    result.content = vec![Content::text(text)];
     result
+}
+
+fn success_envelope(data: Value) -> Value {
+    let mut payload = Map::new();
+    payload.insert("ok".to_string(), Value::Bool(true));
+    payload.insert("data".to_string(), data);
+    payload.insert("error".to_string(), Value::Null);
+    Value::Object(payload)
+}
+
+fn error_envelope(error: Value) -> Value {
+    let mut payload = Map::new();
+    payload.insert("ok".to_string(), Value::Bool(false));
+    payload.insert("data".to_string(), Value::Null);
+    payload.insert("error".to_string(), error);
+    Value::Object(payload)
 }
 
 fn non_empty(value: &str) -> Option<&str> {
@@ -526,6 +545,35 @@ mod tests {
     use super::*;
 
     #[test]
+    fn success_tool_results_return_envelope() {
+        let data = serde_json::json!({
+            "devices": [
+                { "hostname": "node-a" }
+            ]
+        });
+        let result = tool_result_from_json(data.clone()).expect("tool result should serialize");
+
+        assert_eq!(result.is_error, Some(false));
+        let structured = result
+            .structured_content
+            .as_ref()
+            .expect("success results should include structured envelope");
+        assert_eq!(structured["ok"], true);
+        assert_eq!(structured["data"], data);
+        assert_eq!(structured["error"], Value::Null);
+
+        let text = result
+            .content
+            .first()
+            .and_then(|content| content.as_text())
+            .map(|text| text.text.as_str())
+            .expect("success result should include text content");
+        let parsed_text: Value =
+            serde_json::from_str(text).expect("success text should be the JSON envelope");
+        assert_eq!(&parsed_text, structured);
+    }
+
+    #[test]
     fn api_not_found_errors_return_structured_mcp_error() {
         let error = anyhow::Error::new(TailscaleApiError {
             status: reqwest::StatusCode::NOT_FOUND,
@@ -542,16 +590,37 @@ mod tests {
             .first()
             .and_then(|content| content.as_text())
             .map(|text| text.text.as_str());
-        assert_eq!(text, Some("Device not found"));
+        let parsed_text: Value = serde_json::from_str(text.expect("error should include text"))
+            .expect("error text should be the JSON envelope");
 
         let structured = result
             .structured_content
             .as_ref()
             .expect("API errors should include structured content");
+        assert_eq!(&parsed_text, structured);
+        assert_eq!(structured["ok"], false);
+        assert_eq!(structured["data"], Value::Null);
+        assert_eq!(structured["error"]["message"], "Device not found");
         assert_eq!(structured["error"]["code"], "not_found");
         assert_eq!(structured["error"]["status"], 404);
         assert_eq!(structured["error"]["action"], "device");
         assert_eq!(structured["error"]["hint"], "check the device ID");
         assert_eq!(structured["error"]["body"], r#"{"message":"missing"}"#);
+    }
+
+    #[test]
+    fn generic_tool_errors_return_envelope() {
+        let error = anyhow::anyhow!("internal details stay in logs");
+        let result = tool_error_result("devices", &error);
+
+        assert_eq!(result.is_error, Some(true));
+        let structured = result
+            .structured_content
+            .as_ref()
+            .expect("generic errors should include structured envelope");
+        assert_eq!(structured["ok"], false);
+        assert_eq!(structured["data"], Value::Null);
+        assert_eq!(structured["error"]["code"], "tool_execution_failed");
+        assert_eq!(structured["error"]["action"], "devices");
     }
 }
