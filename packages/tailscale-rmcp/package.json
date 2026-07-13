@@ -20,12 +20,16 @@
     "bin/",
     "lib/",
     "scripts/",
-    "README.md"
+    "README.md",
+    "LICENSE*",
+    "package.json"
   ],
   "scripts": {
+    "prepack": "node scripts/sync-readme.js",
     "postinstall": "node scripts/install.js",
     "test": "node --test",
-    "check": "node --check bin/rtailscale.js && node --check scripts/install.js && node --check lib/platform.js"
+    "check": "node --check bin/rtailscale.js && node --check scripts/install.js && node --check lib/platform.js && node --check scripts/sync-readme.js && node --check scripts/check-package.js && node scripts/check-package.js",
+    "prepublishOnly": "node scripts/check-package.js --release"
   },
   "engines": {
     "node": ">=18"
@@ -51,5 +55,9 @@
     "http-server"
   ],
   "mcpName": "ai.dinglebear/tailscale-rmcp",
-  "binaryVersion": "0.1.2"
+  "binaryVersion": "0.1.2",
+  "author": {
+    "name": "dinglebear.ai",
+    "url": "https://dinglebear.ai"
+  }
 }

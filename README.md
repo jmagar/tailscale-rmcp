@@ -51,17 +51,16 @@ API keys through MCP tool arguments.
 | Surface | This repo |
 |---|---|
 | Repository | `tailscale-rmcp` |
-| Rust crate | `rustscale` |
+| Rust crate | `tailscale-rmcp` |
 | Binary / CLI | `rtailscale` |
 | npm package | `tailscale-rmcp` |
 | npm binary aliases | `tailscale-rmcp`, `rtailscale` |
 | MCP tool | `tailscale` |
-| Config home | `~/.tailscale-mcp` on hosts, `/data` in containers |
+| Config home | `~/.tailscale-rmcp` on hosts, `/data` in containers |
 | Env prefixes | `TAILSCALE_*`, `TAILSCALE_MCP_*`, `TAILSCALE_RMCP_*` for npm launcher controls |
 
-The repo and npm package use the RMCP family name. The Rust crate keeps the
-historical `rustscale` name, and the shipped binary is `rtailscale` to avoid
-shadowing the official `tailscale` CLI.
+The repo, crate, and npm package use the RMCP family name. The shipped binary is
+`rtailscale` to avoid shadowing the official `tailscale` CLI.
 
 ## Capabilities And Boundaries
 
@@ -295,7 +294,7 @@ of the RMCP family.
 
 ## Configuration
 
-Host installs read `~/.tailscale-mcp/.env` before loading config. Containers
+Host installs read `~/.tailscale-rmcp/.env` before loading config. Containers
 read `/data/.env`. Process environment overrides both.
 
 | Variable | Default | Purpose |
@@ -305,7 +304,7 @@ read `/data/.env`. Process environment overrides both.
 | `TAILSCALE_ALLOW_DESTRUCTIVE` | `false` | Enable `delete_device` server-side. |
 | `TAILSCALE_MCP_HOST` | `0.0.0.0` | HTTP bind host. |
 | `TAILSCALE_MCP_PORT` | `40040` | HTTP bind port. |
-| `TAILSCALE_MCP_SERVER_NAME` | `rustscale` | Advertised MCP server name. |
+| `TAILSCALE_MCP_SERVER_NAME` | `tailscale-rmcp` | Advertised MCP server name. |
 | `TAILSCALE_MCP_NO_AUTH` | `false` | Disable auth only for loopback development. |
 | `TAILSCALE_MCP_TOKEN` | unset | Static bearer token for HTTP MCP. |
 | `TAILSCALE_NOAUTH` | `false` | Trust an upstream gateway to enforce auth. |
@@ -429,7 +428,7 @@ authenticated gateway.
 
 | Symptom | Check |
 |---|---|
-| `TAILSCALE_API_KEY` is missing | Set it in env or `~/.tailscale-mcp/.env`. |
+| `TAILSCALE_API_KEY` is missing | Set it in env or `~/.tailscale-rmcp/.env`. |
 | Device calls return unauthorized | Refresh the API key in Tailscale admin settings. |
 | HTTP `/mcp` returns unauthorized | Set `TAILSCALE_MCP_TOKEN` and send `Authorization: Bearer <token>`. |
 | Stdio client hangs or logs JSON errors | Ensure client config runs `tailscale-rmcp mcp`, not the default HTTP server mode. |
@@ -438,21 +437,19 @@ authenticated gateway.
 
 ## Related Servers
 
-- `unifi-rmcp / rustifi` - UniFi controller REST API bridge.
-- `unraid-rmcp / unrust` - Unraid GraphQL bridge for NAS and server management.
-- `apprise-rmcp` - Apprise notification fan-out bridge for many delivery backends.
-- `gotify-rmcp` - Gotify push notification bridge for sends, messages, apps, and clients.
-- `arcane-rmcp` - Arcane Docker management bridge for containers and related resources.
-- `yarr-rmcp` - Media-stack bridge for Sonarr, Radarr, Prowlarr, Plex, and related services.
-- `ytdl-mcp` - Media download and metadata workflow server.
-- `synapse` - Local Synapse workflow server for scout and flux actions.
-- `cortex` - Syslog and homelab log aggregation MCP server.
-- `axon` - RAG, crawl, scrape, extract, and semantic search project.
-- `lab` - Homelab control plane and Labby gateway project.
-- `lumen` - Local semantic code search MCP server.
-- `nugs` - Project/package management helper for local agent workflows.
-- `agentcast` - Agent transcript and activity publishing project.
-- `soma` - RMCP scaffold/runtime template for new provider-backed servers.
+- [soma](https://github.com/jmagar/soma) - RMCP runtime for provider-backed MCP servers.
+- [unifi-rmcp](https://github.com/jmagar/unifi-rmcp) - UniFi controller REST API bridge.
+- [unraid-rmcp](https://github.com/jmagar/unraid-rmcp) - Unraid GraphQL bridge for NAS and server management.
+- [apprise-rmcp](https://github.com/jmagar/apprise-rmcp) - Apprise notification fan-out bridge for many delivery backends.
+- [gotify-rmcp](https://github.com/jmagar/gotify-rmcp) - Gotify push notification bridge for sends, messages, apps, and clients.
+- [arcane-rmcp](https://github.com/jmagar/arcane-rmcp) - Arcane Docker management bridge for containers and related resources.
+- [yarr](https://github.com/jmagar/yarr) - Media-stack bridge for Sonarr, Radarr, Prowlarr, Plex, and related services.
+- [ytdl-rmcp](https://github.com/jmagar/ytdl-rmcp) - Media download and metadata workflow server.
+- [synapse-rmcp](https://github.com/jmagar/synapse-rmcp) - Local Synapse workflow server for scout and flux actions.
+- [cortex](https://github.com/jmagar/cortex) - Syslog and homelab log aggregation MCP server.
+- [axon](https://github.com/jmagar/axon) - RAG, crawl, scrape, extract, and semantic search project.
+- [labby](https://github.com/jmagar/labby) - Homelab control plane and MCP gateway project.
+- [lumen](https://github.com/jmagar/lumen) - Local semantic code search MCP server.
 
 ## Documentation
 
