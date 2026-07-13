@@ -1,9 +1,9 @@
+use serde_json::json;
 /// Tests for MCP tool dispatch logic.
 ///
 /// Uses in-process state with a stub TailscaleService (no live network).
 /// Exercises the dispatch shim, not the HTTP layer.
-use rustscale::mcp::testing;
-use serde_json::json;
+use tailscale_rmcp::mcp::testing;
 
 // ── help action ───────────────────────────────────────────────────────────────
 
@@ -113,7 +113,7 @@ async fn missing_action_returns_error() {
 
 /// Drive the tool dispatch directly, bypassing HTTP.
 async fn dispatch_tool(
-    state: &rustscale::mcp::AppState,
+    state: &tailscale_rmcp::mcp::AppState,
     tool: &str,
     args: serde_json::Value,
 ) -> anyhow::Result<serde_json::Value> {
@@ -121,5 +121,5 @@ async fn dispatch_tool(
     // We replicate what rmcp_server::call_tool does:
     //   execute_tool(state, name, args)
     // Since execute_tool is pub(super), we reach it through the testing module path.
-    rustscale::mcp::testing::call_tool(state, tool, args).await
+    tailscale_rmcp::mcp::testing::call_tool(state, tool, args).await
 }

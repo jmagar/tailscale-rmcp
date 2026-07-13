@@ -1,8 +1,10 @@
 {
   "mcpServers": {
-    "tailscale": {
-      "url": "http://localhost:7575/mcp",
-      "transport": "http"
+    "tailscale-rmcp": {
+      "baseUrl": "https://ts.tootie.tv/mcp",
+      "headers": {
+        "Authorization": "Bearer ${TAILSCALE_MCP_TOKEN}"
+      }
     }
   }
 }

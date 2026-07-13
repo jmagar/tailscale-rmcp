@@ -1,7 +1,7 @@
 ---
 name: tailscale
 description: >
-  rustscale MCP server — query and manage your Tailscale network from Claude.
+  tailscale-rmcp MCP server — query and manage your Tailscale network from Claude.
   Use this skill whenever the user mentions Tailscale devices, tailnet status,
   VPN nodes, MagicDNS, Tailscale ACL, access control policy, subnet routes,
   tailnet members, API keys, or wants to authorize or delete a device. Trigger
@@ -16,7 +16,7 @@ description: >
 # Tailscale Skill
 
 Bridge to the Tailscale REST API (`https://api.tailscale.com/api/v2`) via the
-**rustscale** MCP server. Exposes a single `tailscale` MCP tool with action
+**tailscale-rmcp** MCP server. Exposes a single `tailscale` MCP tool with action
 dispatch. Use the three tiers below in order: MCP first, CLI second, raw REST
 only as a last resort.
 

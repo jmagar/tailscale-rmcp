@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# install.sh — one-line installer for rustscale (Tailscale MCP server)
+# install.sh — one-line installer for tailscale-rmcp (Tailscale MCP server)
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/jmagar/rustscale/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/jmagar/tailscale-rmcp/main/install.sh | bash
 #   # or locally:
 #   bash install.sh
 #
@@ -12,12 +12,12 @@
 #                    Set to "tailscale-mcp" to avoid shadowing the real Tailscale CLI.
 #   BUILD=1          Build from source instead of downloading a release binary
 #   FORCE=1          Install even if a conflicting binary exists
-#   RUSTSCALE_VERSION  Pin a specific release tag (e.g. v0.1.0)
+#   TAILSCALE_RMCP_VERSION  Pin a specific release tag (e.g. v0.1.0)
 #
 # What it does:
 #   1. Pre-flight checks (platform, tools, disk space, install dir, env vars, port)
 #   2. Warns if a tailscale binary conflict is detected
-#   3. Builds or downloads the rustscale binary to INSTALL_DIR/BINARY_NAME
+#   3. Builds or downloads the tailscale-rmcp binary to INSTALL_DIR/BINARY_NAME
 #   4. Creates ~/.tailscale-mcp/ data and log directories
 #   5. Writes a starter ~/.tailscale-mcp/.env if one doesn't already exist
 #   6. Runs `<binary> doctor` to validate the installation
@@ -30,7 +30,7 @@ BINARY_NAME="${BINARY_NAME:-tailscale}"
 BINARY_PATH="${INSTALL_DIR}/${BINARY_NAME}"
 DATA_DIR="${HOME}/.tailscale-mcp"
 ENV_FILE="${DATA_DIR}/.env"
-REPO="jmagar/rustscale"
+REPO="jmagar/tailscale-rmcp"
 MCP_PORT="${TAILSCALE_MCP_PORT:-7575}"
 
 # Colours
@@ -45,7 +45,7 @@ else
   C_RESET='' C_BOLD='' C_GREEN='' C_YELLOW='' C_RED='' C_CYAN=''
 fi
 
-info()  { printf "${C_CYAN}[rustscale]${C_RESET} %s\n"  "$*"; }
+info()  { printf "${C_CYAN}[tailscale-rmcp]${C_RESET} %s\n"  "$*"; }
 warn()  { printf "${C_YELLOW}[WARN]${C_RESET}      %s\n" "$*" >&2; }
 error() { printf "${C_RED}[ERROR]${C_RESET}     %s\n"    "$*" >&2; }
 ok()    { printf "${C_GREEN}[OK]${C_RESET}        %s\n"  "$*"; }
@@ -122,7 +122,7 @@ preflight() {
       existing="$(command -v tailscale)"
       if [[ "${existing}" != "${BINARY_PATH}" ]]; then
         warn "BINARY NAME CONFLICT: 'tailscale' already resolves to: ${existing}"
-        warn "  Installing rustscale as 'tailscale' may shadow the real Tailscale CLI."
+        warn "  Installing tailscale-rmcp as 'tailscale' may shadow the real Tailscale CLI."
         warn "  To avoid conflict, re-run with: BINARY_NAME=tailscale-mcp bash install.sh"
         warn "  Or set FORCE=1 to install anyway (know what you're doing)."
       fi
@@ -176,7 +176,7 @@ warn_binary_conflict() {
     existing="$(command -v tailscale)"
     if [[ "${existing}" != "${BINARY_PATH}" ]]; then
       warn "'tailscale' currently resolves to: ${existing}"
-      warn "Installing rustscale at ${BINARY_PATH} will shadow the real Tailscale CLI"
+      warn "Installing tailscale-rmcp at ${BINARY_PATH} will shadow the real Tailscale CLI"
       warn "if ~/.local/bin appears before that directory in your PATH."
       warn ""
       warn "To avoid conflict, consider:"
@@ -194,8 +194,8 @@ install_from_cargo() {
     return 1
   fi
 
-  info "Building rustscale from source with cargo..."
-  if [[ -f "Cargo.toml" && "$(basename "$(pwd)")" == "rustscale" ]]; then
+  info "Building tailscale-rmcp from source with cargo..."
+  if [[ -f "Cargo.toml" && "$(basename "$(pwd)")" == "tailscale-rmcp" ]]; then
     # In-tree build
     cargo build --release --locked
     local target_dir="${CARGO_TARGET_DIR:-target}"
@@ -215,7 +215,7 @@ install_from_release() {
     return 1
   fi
 
-  local tag="${RUSTSCALE_VERSION:-}"
+  local tag="${TAILSCALE_RMCP_VERSION:-}"
   if [[ -z "${tag}" ]]; then
     info "Fetching latest release tag..."
     tag="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" | \
@@ -265,7 +265,7 @@ write_env() {
 
   info "Writing starter ${ENV_FILE}..."
   cat > "${ENV_FILE}" << 'EOF'
-# rustscale — Tailscale MCP Server
+# tailscale-rmcp — Tailscale MCP Server
 # Fill in the required values below, then run: tailscale doctor
 
 # ── Required ─────────────────────────────────────────────────────────────────
@@ -314,7 +314,7 @@ post_install_doctor() {
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 main() {
-  printf '\n%b%s%b\n' "${C_BOLD}" "rustscale installer" "${C_RESET}"
+  printf '\n%b%s%b\n' "${C_BOLD}" "tailscale-rmcp installer" "${C_RESET}"
   printf '%s\n' "Tailscale MCP server — https://github.com/${REPO}"
 
   if [[ "${BINARY_NAME}" != "tailscale" ]]; then
@@ -369,7 +369,7 @@ main() {
   if [[ "${BINARY_NAME}" == "tailscale" ]]; then
     printf '\n%b  Binary conflict note:%b\n' "${C_YELLOW}" "${C_RESET}"
     printf '  If the real Tailscale CLI is installed, use BINARY_NAME=tailscale-mcp\n'
-    printf '  to install rustscale under a non-conflicting name:\n'
+    printf '  to install tailscale-rmcp under a non-conflicting name:\n'
     printf '    BINARY_NAME=tailscale-mcp bash install.sh\n'
   fi
   printf '\n'

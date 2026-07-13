@@ -1,5 +1,5 @@
 #!/bin/sh
-# entrypoint.sh — Docker container entrypoint for rustscale (Tailscale MCP server)
+# entrypoint.sh — Docker container entrypoint for tailscale-rmcp (Tailscale MCP server)
 #
 # Runs as root, validates the environment, fixes directory ownership, then
 # drops privileges to UID 1000:1000 and exec's the service binary.

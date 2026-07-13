@@ -1,8 +1,8 @@
-# rustscale — Claude Code instructions
+# tailscale-rmcp — Claude Code instructions
 
 ## What this project is
 
-`rustscale` is a Rust binary (`tailscale`) that bridges Claude to the Tailscale REST API (`https://api.tailscale.com/api/v2`) via the Model Context Protocol. It exposes a single `tailscale` MCP tool with action dispatch.
+`tailscale-rmcp` is a Rust binary (`rtailscale`) that bridges Claude to the Tailscale REST API (`https://api.tailscale.com/api/v2`) via the Model Context Protocol. It exposes a single `tailscale` MCP tool with action dispatch.
 
 ## Module map
 

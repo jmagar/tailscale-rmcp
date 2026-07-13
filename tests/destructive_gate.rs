@@ -1,10 +1,10 @@
+use serde_json::json;
 /// Tests for the destructive gate in TailscaleService.
 ///
 /// These run in-process — no live Tailscale API needed.
 /// The client is constructed with a stub key; calls are blocked by the gate
 /// before they ever reach the network.
-use rustscale::mcp::testing;
-use serde_json::json;
+use tailscale_rmcp::mcp::testing;
 
 // ── disabled server + no confirm ─────────────────────────────────────────────
 

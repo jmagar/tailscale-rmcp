@@ -110,7 +110,7 @@ fn strip_json_flag(args: &[String]) -> (Vec<String>, bool) {
 
 // ── doctor ─────────────────────────────────────────────────────────────────────
 
-/// Returns the local data directory for rustscale.
+/// Returns the local data directory for tailscale-rmcp.
 /// Uses `~/.tailscale-mcp/` (not `~/.tailscale`) to avoid conflict with the
 /// real Tailscale client data directory.
 pub fn default_data_dir() -> PathBuf {
@@ -287,7 +287,7 @@ fn check_binary_in_path() -> Vec<DoctorCheck> {
                     .map(|o| {
                         let out = String::from_utf8_lossy(&o.stdout);
                         // Real Tailscale CLI prints a version like "1.xx.x"
-                        out.contains('.') && !out.contains("rustscale")
+                        out.contains('.') && !out.contains("tailscale-rmcp")
                     })
                     .unwrap_or(false);
 
@@ -299,7 +299,7 @@ fn check_binary_in_path() -> Vec<DoctorCheck> {
                         value: Some(resolved),
                         hint: Some(
                             "The real Tailscale CLI binary is in PATH as 'tailscale' and may \
-                             shadow or be shadowed by this binary. Consider installing rustscale \
+                             shadow or be shadowed by this binary. Consider installing tailscale-rmcp \
                              as 'tailscale-mcp' instead (set BINARY_NAME=tailscale-mcp when \
                              re-running install.sh)."
                                 .to_string(),
@@ -425,7 +425,7 @@ fn check_destructive_warn(allow: bool) -> Option<DoctorCheck> {
 fn print_doctor_report(checks: &[DoctorCheck]) {
     eprintln!();
     eprintln!(
-        "rustscale v{} — environment check",
+        "tailscale-rmcp v{} — environment check",
         env!("CARGO_PKG_VERSION")
     );
     eprintln!();

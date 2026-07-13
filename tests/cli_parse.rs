@@ -1,5 +1,5 @@
 /// Tests for CLI argument parsing (no network, no async).
-use rustscale::cli::CliCommand;
+use tailscale_rmcp::cli::CliCommand;
 
 #[test]
 fn parse_devices() {
@@ -133,12 +133,12 @@ fn json_flag_works_with_short_form() {
 #[test]
 fn setup_plugin_hook_parse_is_recognized() {
     let parsed =
-        rustscale::setup::SetupCommand::parse(&args(&["setup", "plugin-hook", "--no-repair"]))
+        tailscale_rmcp::setup::SetupCommand::parse(&args(&["setup", "plugin-hook", "--no-repair"]))
             .unwrap();
     assert!(matches!(
         parsed,
         Some((
-            rustscale::setup::SetupCommand::PluginHook { no_repair: true },
+            tailscale_rmcp::setup::SetupCommand::PluginHook { no_repair: true },
             false
         ))
     ));

@@ -3,7 +3,8 @@ use rmcp::{transport::stdio, ServiceExt};
 use tracing::info;
 use tracing_subscriber::{fmt, EnvFilter};
 
-use rustscale::{
+use std::sync::Arc;
+use tailscale_rmcp::{
     app::TailscaleService,
     cli,
     config::Config,
@@ -11,7 +12,6 @@ use rustscale::{
     observability::Counters,
     tailscale::TailscaleClient,
 };
-use std::sync::Arc;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -32,7 +32,7 @@ async fn main() -> Result<()> {
     // Load ~/.tailscale-mcp/.env (or /data/.env in a container) before any
     // Config::load so the binary works on bare metal without a process manager
     // injecting env. Non-overriding: explicit process env still wins.
-    rustscale::cli::load_dotenv();
+    tailscale_rmcp::cli::load_dotenv();
 
     let stdio_mode = matches!(args.as_slice(), [c] if c == "mcp");
     let serve_mode = args.is_empty()
@@ -56,8 +56,8 @@ async fn main() -> Result<()> {
         serve_mcp().await
     } else if stdio_mode {
         serve_stdio_mcp().await
-    } else if let Some((command, json)) = rustscale::setup::SetupCommand::parse(&args)? {
-        rustscale::setup::run(command, json)
+    } else if let Some((command, json)) = tailscale_rmcp::setup::SetupCommand::parse(&args)? {
+        tailscale_rmcp::setup::run(command, json)
     } else if matches!(args.as_slice(), [c] if c == "doctor")
         || matches!(args.as_slice(), [c, _] if c == "doctor")
     {
@@ -80,7 +80,7 @@ async fn serve_mcp() -> Result<()> {
         bind = %state.config.bind_addr(),
         server_name = %state.config.server_name,
         auth = ?state.auth_policy,
-        "rustscale starting"
+        "tailscale-rmcp starting"
     );
 
     let bind = state.config.bind_addr();
@@ -99,7 +99,7 @@ async fn serve_mcp() -> Result<()> {
 fn validate_bind_security(config: &Config) -> Result<()> {
     let is_loopback = config.mcp.host.starts_with("127.") || config.mcp.host == "::1";
     let has_auth = (!config.mcp.no_auth && config.mcp.api_token.is_some())
-        || config.mcp.auth.mode == rustscale::config::AuthMode::OAuth;
+        || config.mcp.auth.mode == tailscale_rmcp::config::AuthMode::OAuth;
     let noauth_override = std::env::var("TAILSCALE_NOAUTH")
         .map(|v| matches!(v.to_lowercase().as_str(), "true" | "1" | "yes"))
         .unwrap_or(false);
@@ -124,7 +124,7 @@ async fn serve_stdio_mcp() -> Result<()> {
         config: config.mcp,
         auth_policy: AuthPolicy::LoopbackDev,
         service,
-        counters: Arc::new(rustscale::observability::Counters::new()),
+        counters: Arc::new(tailscale_rmcp::observability::Counters::new()),
     };
     let svc = mcp::rmcp_server(state).serve(stdio()).await?;
     svc.waiting().await?;
@@ -152,8 +152,8 @@ async fn build_state(config: Config) -> Result<AppState> {
 }
 
 async fn resolve_auth_policy(config: &Config) -> Result<AuthPolicy> {
-    use rustscale::config::AuthMode;
     use std::sync::Arc;
+    use tailscale_rmcp::config::AuthMode;
 
     // Loopback or explicit no_auth → no authentication required
     if config.mcp.no_auth || config.mcp.host.starts_with("127.") {

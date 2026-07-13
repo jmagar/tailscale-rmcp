@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# refresh-docs.sh — Refresh reference docs for rustscale (Tailscale MCP)
+# refresh-docs.sh — Refresh reference docs for tailscale-rmcp (Tailscale MCP)
 # Pattern: §38 — Crawls Tailscale API docs + packs Tailscale repos
 # Usage: scripts/refresh-docs.sh [--dry-run] [--skip-crawl] [--skip-repomix]
 #
@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do case "$1" in
 log() { printf '[refresh-docs] %s\n' "$*"; }
 refresh_scope() { if [[ "$SKIP_CRAWL" == true ]]; then printf repomix-only; elif [[ "$SKIP_REPOMIX" == true ]]; then printf crawl-only; else printf full; fi; }
 require_cmd() { command -v "$1" >/dev/null 2>&1 || { echo "ERROR: $1 not found" >&2;exit 1; }; }
-make_tmpdir() { mktemp -d "${TMPDIR:-/tmp}/rustscale-refresh-docs.XXXXXX"; }
+make_tmpdir() { mktemp -d "${TMPDIR:-/tmp}/tailscale-rmcp-refresh-docs.XXXXXX"; }
 atomic_replace_dir() {
   local src="$1" dst="$2" parent backup; parent="$(dirname -- "$dst")"; mkdir -p "$parent"
   backup="$(mktemp -d "$parent/.$(basename "$dst").backup.XXXXXX")"; rmdir "$backup"
@@ -63,7 +63,7 @@ write_index() {
   [[ -d "$REF_DIR/tailscale/docs" ]] && t="$(find "$REF_DIR/tailscale/docs" -type f|wc -l|tr -d ' ')"
   [[ -d "$REF_DIR/mcp/docs"      ]] && m="$(find "$REF_DIR/mcp/docs"      -type f|wc -l|tr -d ' ')"
   cat > "$REF_DIR/INDEX.md" <<EOF
-# Reference Index — rustscale (Tailscale MCP)
+# Reference Index — tailscale-rmcp (Tailscale MCP)
 | Path | Contents | Source |
 |---|---|---|
 | \`tailscale/docs/\`  | Tailscale API reference crawl      | tailscale.com/api |
@@ -84,7 +84,7 @@ snapshot_references() {
 snapshot_paths() { awk '{$1="";sub(/^  /,"");print}' "$1"; }
 ensure_changes_file() {
   mkdir -p "$REF_DIR"; [[ -f "$CHANGES_FILE" ]] && return 0
-  printf -- '---\ntitle: Reference Refresh Log — rustscale\ncreated_at: %s\n---\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CHANGES_FILE"
+  printf -- '---\ntitle: Reference Refresh Log — tailscale-rmcp\ncreated_at: %s\n---\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CHANGES_FILE"
 }
 append_changes_log() {
   ensure_changes_file

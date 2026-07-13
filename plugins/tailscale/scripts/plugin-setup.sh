@@ -2,7 +2,7 @@
 # SessionStart / ConfigChange hook for the Tailscale plugin.
 set -euo pipefail
 
-binary="${RUSTSCALE_MCP_BIN:-rtailscale}"
+binary="${TAILSCALE_RMCP_BIN:-rtailscale}"
 
 if ! command -v "${binary}" >/dev/null 2>&1; then
   printf 'tailscale plugin setup: rtailscale is not installed or not on PATH.\n' >&2

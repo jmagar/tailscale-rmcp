@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# test-tools.sh — Integration smoke-test for rustscale MCP server tools
+# test-tools.sh — Integration smoke-test for tailscale-rmcp MCP server tools
 #
 # Exercises all non-destructive actions of the tailscale MCP tool:
 #   tailscale devices    — all devices in the tailnet
@@ -231,7 +231,7 @@ smoke_test_server() {
 
   if [[ "${health_status}" != "ok" ]]; then
     log_error "Health endpoint at ${base_url}/health did not return status=ok (got: '${health_status}')"
-    log_error "Is the rustscale server running?  just dev  or  docker compose up -d"
+    log_error "Is the tailscale-rmcp server running?  just dev  or  docker compose up -d"
     return 2
   fi
   log_info "Health endpoint OK"
@@ -716,7 +716,7 @@ main() {
   load_env
 
   printf '%b%s%b\n' "${C_BOLD}" "$(printf '=%.0s' {1..65})" "${C_RESET}"
-  printf '%b  rustscale MCP integration smoke-test%b\n' "${C_BOLD}" "${C_RESET}"
+  printf '%b  tailscale-rmcp MCP integration smoke-test%b\n' "${C_BOLD}" "${C_RESET}"
   printf '%b  Project:  %s%b\n' "${C_BOLD}" "${PROJECT_DIR}" "${C_RESET}"
   printf '%b  MCP URL:  %s%b\n' "${C_BOLD}" "${MCP_URL}" "${C_RESET}"
   printf '%b  Timeout:  %dms/call | Parallel: %s%b\n' \

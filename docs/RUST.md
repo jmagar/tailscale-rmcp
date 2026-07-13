@@ -2,7 +2,7 @@
 title: "Rust Build Setup"
 doc_type: "guide"
 status: "active"
-owner: "rustscale"
+owner: "tailscale-rmcp"
 audience:
   - "contributors"
   - "agents"

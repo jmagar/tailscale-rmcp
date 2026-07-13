@@ -1,8 +1,8 @@
-name: rustscale
+name: tailscale-rmcp
 
 x-common-service: &common-service
   networks:
-    - rustscale
+    - tailscale-rmcp
   restart: unless-stopped
   extra_hosts:
     - "host.docker.internal:host-gateway"
@@ -44,6 +44,6 @@ services:
           cpus: '0.5'
 
 networks:
-  rustscale:
-    name: ${DOCKER_NETWORK:-rustscale}
+  tailscale-rmcp:
+    name: ${DOCKER_NETWORK:-tailscale-rmcp}
     external: true

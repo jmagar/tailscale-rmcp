@@ -19,7 +19,7 @@ fmt:
 test:
     cargo test
 
-# Install rustscale binary to ~/.local/bin/rtailscale (warns on name conflict)
+# Install tailscale-rmcp binary to ~/.local/bin/rtailscale (warns on name conflict)
 install: release
     #!/usr/bin/env bash
     set -euo pipefail
@@ -45,17 +45,17 @@ install: release
     echo "Installed: ${binary}"
 
 docker-build:
-    docker build -f config/Dockerfile -t rustscale .
+    docker build -f config/Dockerfile -t tailscale-rmcp .
 
-# Start rustscale via Docker Compose (container named tailscale-mcp to avoid conflict)
+# Start tailscale-rmcp via Docker Compose (container named tailscale-mcp to avoid conflict)
 docker-up:
     docker compose up -d
 
-# Stop the rustscale Docker Compose stack
+# Stop the tailscale-rmcp Docker Compose stack
 docker-down:
     docker compose down
 
-# Restart the rustscale container
+# Restart the tailscale-rmcp container
 restart:
     docker compose restart tailscale-mcp
 
@@ -108,18 +108,18 @@ generate-cli:
       -H "Authorization: Bearer ${TAILSCALE_MCP_TOKEN:-}" \
       -H "Accept: application/json, text/event-stream" \
       http://localhost:40040/mcp/tools/list 2>/dev/null | sha256sum | cut -d' ' -f1 || echo "nohash")
-    cache_file="dist/.cache/rustscale-cli.schema_hash"
-    if [[ -f "$cache_file" ]] && [[ "$(cat "$cache_file")" == "$current_hash" ]] && [[ -f "dist/rustscale-cli" ]]; then
-      echo "SKIP: tool schema unchanged — use existing dist/rustscale-cli"
+    cache_file="dist/.cache/tailscale-rmcp-cli.schema_hash"
+    if [[ -f "$cache_file" ]] && [[ "$(cat "$cache_file")" == "$current_hash" ]] && [[ -f "dist/tailscale-rmcp-cli" ]]; then
+      echo "SKIP: tool schema unchanged — use existing dist/tailscale-rmcp-cli"
       exit 0
     fi
     timeout 30 mcporter generate-cli \
       --command http://localhost:40040/mcp \
       --header "Authorization: Bearer ${TAILSCALE_MCP_TOKEN:-}" \
-      --name rustscale-cli \
-      --output dist/rustscale-cli
+      --name tailscale-rmcp-cli \
+      --output dist/tailscale-rmcp-cli
     printf '%s' "$current_hash" > "$cache_file"
-    echo "Generated dist/rustscale-cli (requires bun at runtime)"
+    echo "Generated dist/tailscale-rmcp-cli (requires bun at runtime)"
 
 clean:
     cargo clean

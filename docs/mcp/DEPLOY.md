@@ -99,7 +99,7 @@ MCP exposes only redacted read-only Compose diagnostics (`compose_status`, `comp
 | User | Non-root, UID 1000 (`syslog`) |
 | Health check | `curl -sf http://localhost:3100/health` every 30s |
 | Data | Named volume mounted at `/data` |
-| Network | External Docker network (`${DOCKER_NETWORK:-rustscale}`) |
+| Network | External Docker network (`${DOCKER_NETWORK:-tailscale-rmcp}`) |
 | Signals | Graceful shutdown on SIGTERM/SIGINT (tokio signal handler) |
 | Config | No `config.toml` in image -- defaults + env vars only |
 

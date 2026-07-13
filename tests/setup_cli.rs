@@ -105,8 +105,8 @@ fn plugin_hook_maps_plugin_options_into_env() {
 /// The plugin hook config must call the binary directly.
 #[test]
 fn claude_hooks_call_binary_directly() {
-    let hooks_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("plugins/tailscale/hooks/hooks.json");
+    let hooks_path =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("plugins/tailscale/hooks/hooks.json");
     let hooks: serde_json::Value =
         serde_json::from_str(&fs::read_to_string(hooks_path).unwrap()).unwrap();
     for hook_name in ["SessionStart", "ConfigChange"] {

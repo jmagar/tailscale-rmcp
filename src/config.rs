@@ -94,7 +94,7 @@ fn default_mcp_port() -> u16 {
 }
 
 fn default_server_name() -> String {
-    "rustscale".into()
+    "tailscale-rmcp".into()
 }
 
 fn default_auth_sqlite_path() -> String {

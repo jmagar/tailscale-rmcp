@@ -1,5 +1,5 @@
 /// Aurora palette — ANSI 256 constants (matches lab/crates/lab/src/output/theme.rs exactly).
-/// These are the single source of truth for console log coloring in rustscale.
+/// These are the single source of truth for console log coloring in tailscale-rmcp.
 pub const SERVICE_NAME: u8 = 211; // pink        (255,175,215)
 pub const ACCENT_PRIMARY: u8 = 39; // bright blue (41,182,246)
 #[allow(dead_code)]

@@ -1,4 +1,4 @@
-//! cargo xtask — repo automation for rustscale
+//! cargo xtask — repo automation for tailscale-rmcp
 //!
 //! Usage: cargo xtask <command>
 //!

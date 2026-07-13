@@ -1,4 +1,4 @@
-name: rustscale
+name: tailscale-rmcp
 
 # Local development stack. Builds from this checkout.
 services:
@@ -13,6 +13,6 @@ services:
       dockerfile: config/Dockerfile
 
 networks:
-  rustscale:
-    name: ${DOCKER_NETWORK:-rustscale}
+  tailscale-rmcp:
+    name: ${DOCKER_NETWORK:-tailscale-rmcp}
     external: true

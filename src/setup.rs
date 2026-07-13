@@ -14,7 +14,9 @@ pub enum SetupCommand {
     /// Copy this binary into ~/.local/bin so it is callable as a bare command
     /// in the user's own terminal, independent of Claude Code.
     Install,
-    PluginHook { no_repair: bool },
+    PluginHook {
+        no_repair: bool,
+    },
 }
 
 impl SetupCommand {
@@ -186,7 +188,10 @@ fn apply_plugin_options() {
         ("CLAUDE_PLUGIN_OPTION_MCP_HOST", "TAILSCALE_MCP_HOST"),
         ("CLAUDE_PLUGIN_OPTION_MCP_PORT", "TAILSCALE_MCP_PORT"),
         ("CLAUDE_PLUGIN_OPTION_AUTH_MODE", "TAILSCALE_MCP_AUTH_MODE"),
-        ("CLAUDE_PLUGIN_OPTION_PUBLIC_URL", "TAILSCALE_MCP_PUBLIC_URL"),
+        (
+            "CLAUDE_PLUGIN_OPTION_PUBLIC_URL",
+            "TAILSCALE_MCP_PUBLIC_URL",
+        ),
         (
             "CLAUDE_PLUGIN_OPTION_GOOGLE_CLIENT_ID",
             "TAILSCALE_MCP_GOOGLE_CLIENT_ID",
@@ -199,8 +204,14 @@ fn apply_plugin_options() {
             "CLAUDE_PLUGIN_OPTION_AUTH_ADMIN_EMAIL",
             "TAILSCALE_MCP_AUTH_ADMIN_EMAIL",
         ),
-        ("CLAUDE_PLUGIN_OPTION_TAILSCALE_API_KEY", "TAILSCALE_API_KEY"),
-        ("CLAUDE_PLUGIN_OPTION_TAILSCALE_TAILNET", "TAILSCALE_TAILNET"),
+        (
+            "CLAUDE_PLUGIN_OPTION_TAILSCALE_API_KEY",
+            "TAILSCALE_API_KEY",
+        ),
+        (
+            "CLAUDE_PLUGIN_OPTION_TAILSCALE_TAILNET",
+            "TAILSCALE_TAILNET",
+        ),
         (
             "CLAUDE_PLUGIN_OPTION_ALLOW_DESTRUCTIVE",
             "TAILSCALE_ALLOW_DESTRUCTIVE",
