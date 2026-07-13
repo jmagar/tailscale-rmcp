@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3](https://github.com/jmagar/tailscale-rmcp/compare/v0.1.2...v0.1.3) (2026-07-13)
+
+
+### Fixed
+
+* **npm:** harden package release checks ([68cba6c](https://github.com/jmagar/tailscale-rmcp/commit/68cba6c3842fe89a15021d1bb4ee7a10ec8edba7))
+* route rust builds through sccache wrapper ([738cb29](https://github.com/jmagar/tailscale-rmcp/commit/738cb2964ad15d8ebbdcf5c3075195f029575994))
+
 ## [0.1.2](https://github.com/jmagar/tailscale-rmcp/compare/v0.1.1...v0.1.2) (2026-07-09)
 
 
