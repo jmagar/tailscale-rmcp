@@ -137,6 +137,9 @@ build-plugin: release
     install -m 755 "$target_dir/release/rtailscale" bin/rtailscale
     install -m 755 "$target_dir/release/rtailscale" plugins/tailscale/bin/rtailscale
 
+# Explicit binary artifact sync. This replaces hidden Cargo rustc-wrapper side effects.
+sync-bin: build-plugin
+
 # Publish: bump version, tag, push (triggers crates.io + Docker publish)
 publish bump="patch":
     #!/usr/bin/env bash
