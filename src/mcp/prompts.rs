@@ -9,7 +9,8 @@ pub(super) fn list_prompts() -> ListPromptsResult {
             "network_status",
             Some("Check all Tailscale devices and summarize tailnet health."),
             None,
-        )],
+        )
+        .with_title("Network Status")],
         ..Default::default()
     }
 }

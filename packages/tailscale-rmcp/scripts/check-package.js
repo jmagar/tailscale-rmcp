@@ -114,6 +114,7 @@ function checkMetadata() {
 
   assert(packageJson.name, "package.json must include name");
   assert(packageJson.version, "package.json must include version");
+  assert(packageJson.binaryVersion === packageJson.version, "package.json binaryVersion must match version");
   assert(packageJson.description, "package.json must include description");
   assert(packageJson.license, "package.json must include license");
   assert(packageJson.author && packageJson.author.name === "dinglebear.ai", "package.json author must be dinglebear.ai");
@@ -130,6 +131,15 @@ function checkMetadata() {
   if (npmPackage) {
     assert(npmPackage.identifier === packageJson.name, "server.json npm package identifier must match package name");
     assert(npmPackage.version === packageJson.version, "server.json npm package version must match package version");
+    const binaryVersionEnv = (npmPackage.environmentVariables || []).find(
+      (entry) => entry.name === "TAILSCALE_RMCP_VERSION",
+    );
+    if (binaryVersionEnv && binaryVersionEnv.placeholder) {
+      assert(
+        binaryVersionEnv.placeholder === `v${packageJson.version}`,
+        `server.json TAILSCALE_RMCP_VERSION placeholder must be v${packageJson.version}`,
+      );
+    }
   } else {
     fail("server.json must include an npm package entry");
   }

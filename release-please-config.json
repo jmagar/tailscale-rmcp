@@ -67,7 +67,12 @@
       "component": "tailscale-rmcp",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        "packages/tailscale-rmcp/package.json"
+        "packages/tailscale-rmcp/package.json",
+        {
+          "type": "json",
+          "path": "packages/tailscale-rmcp/package.json",
+          "jsonpath": "$.binaryVersion"
+        }
       ]
     }
   }

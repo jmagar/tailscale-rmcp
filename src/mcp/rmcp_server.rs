@@ -6,7 +6,7 @@ use rmcp::{
         CallToolRequestParams, CallToolResult, Content, GetPromptRequestParams, GetPromptResult,
         Implementation, ListPromptsResult, ListResourcesResult, ListToolsResult,
         PaginatedRequestParams, RawResource, ReadResourceRequestParams, ReadResourceResult,
-        Resource, ResourceContents, ServerCapabilities, ServerInfo, Tool,
+        Resource, ResourceContents, ServerCapabilities, ServerInfo, Tool, ToolAnnotations,
     },
     service::RequestContext,
     transport::streamable_http_server::{
@@ -185,10 +185,21 @@ impl ServerHandler for TailscaleRmcpServer {
                 .enable_prompts()
                 .build(),
         )
-        .with_server_info(Implementation::new(
-            self.state.config.server_name.clone(),
-            env!("CARGO_PKG_VERSION"),
-        ))
+        .with_server_info(
+            Implementation::new(
+                self.state.config.server_name.clone(),
+                env!("CARGO_PKG_VERSION"),
+            )
+            .with_title("Tailscale RMCP")
+            .with_description(env!("CARGO_PKG_DESCRIPTION"))
+            .with_website_url(env!("CARGO_PKG_HOMEPAGE")),
+        )
+        .with_instructions(
+            "Use the tailscale tool to inspect and manage a Tailscale tailnet. \
+             Read actions include devices, device, device_routes, keys, acl, dns, and users. \
+             Mutating actions require write scope, and delete_device also requires confirm=true \
+             plus server-side destructive actions to be enabled.",
+        )
     }
 }
 
@@ -224,6 +235,7 @@ const SCHEMA_RESOURCE_URI: &str = "tailscale://schema/mcp-tool";
 fn schema_resource() -> Resource {
     Resource::new(
         RawResource::new(SCHEMA_RESOURCE_URI, "tailscale tool schema")
+            .with_title("Tailscale Tool Schema")
             .with_description(
                 "JSON schema for the tailscale MCP tool and its action-based parameters",
             )
@@ -255,11 +267,36 @@ fn rmcp_tool_from_json(value: Value) -> Result<Tool, ErrorData> {
         .and_then(Value::as_object)
         .cloned()
         .ok_or_else(|| ErrorData::internal_error("tool definition missing inputSchema", None))?;
-    Ok(Tool::new_with_raw(
+    let mut tool = Tool::new_with_raw(
         Cow::Owned(name.to_string()),
         description,
         Arc::new(input_schema),
-    ))
+    );
+    tool.title = value
+        .get("title")
+        .and_then(Value::as_str)
+        .map(str::to_string);
+    tool.output_schema = value
+        .get("outputSchema")
+        .and_then(Value::as_object)
+        .cloned()
+        .map(Arc::new);
+    tool.annotations = value
+        .get("annotations")
+        .and_then(Value::as_object)
+        .map(|annotations| {
+            let mut parsed = ToolAnnotations::default();
+            parsed.title = annotations
+                .get("title")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            parsed.read_only_hint = annotations.get("readOnlyHint").and_then(Value::as_bool);
+            parsed.destructive_hint = annotations.get("destructiveHint").and_then(Value::as_bool);
+            parsed.idempotent_hint = annotations.get("idempotentHint").and_then(Value::as_bool);
+            parsed.open_world_hint = annotations.get("openWorldHint").and_then(Value::as_bool);
+            parsed
+        });
+    Ok(tool)
 }
 
 fn tool_result_from_json(value: Value) -> Result<CallToolResult, ErrorData> {

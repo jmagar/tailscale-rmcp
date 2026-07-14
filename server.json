@@ -4,6 +4,20 @@
   "title": "Tailscale RMCP",
   "description": "Rust MCP server and CLI for Tailscale devices, users, keys, policies, and auth.",
   "version": "0.1.3",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://ts.tootie.tv/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer token for the tailscale-rmcp MCP endpoint.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
   "websiteUrl": "https://github.com/jmagar/tailscale-rmcp",
   "repository": {
     "url": "https://github.com/jmagar/tailscale-rmcp",
@@ -52,7 +66,7 @@
           "format": "string",
           "isRequired": false,
           "isSecret": false,
-          "placeholder": "v0.1.2"
+          "placeholder": "v0.1.3"
         },
         {
           "name": "TAILSCALE_RMCP_REPO",
