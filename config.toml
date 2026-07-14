@@ -1,4 +1,4 @@
-# rustscale configuration
+# tailscale-rmcp configuration
 # Env vars (TAILSCALE_* prefix) override these values.
 # Required: TAILSCALE_API_KEY must be set (env var or uncommented below).
 
@@ -10,7 +10,7 @@
 [mcp]
 host = "0.0.0.0"
 port = 40040
-server_name = "rustscale"
+server_name = "tailscale-rmcp"
 # api_token = ""        # TAILSCALE_MCP_TOKEN — static bearer token
 # no_auth = false       # TAILSCALE_MCP_NO_AUTH — loopback-only, disables all auth
 # allowed_hosts = []    # extra Host header values
