@@ -1,13 +1,12 @@
-# Repository Documentation -- syslog-mcp
+# Repository Docs
 
-Reference documentation for the repository structure, conventions, and tooling.
+This folder documents the repo layout and maintenance rules for
+`tailscale-rmcp`.
 
-## File index
+- `REPO.md` - source layout
+- `RULES.md` - project rules and boundaries
+- `SCRIPTS.md` - helper scripts
+- `RECIPES.md` - common workflows
 
-| File | Purpose |
-| --- | --- |
-| `MEMORY.md` | Claude Code memory system for persistent knowledge across sessions |
-| `RECIPES.md` | Justfile recipes reference |
-| `REPO.md` | Repository directory structure |
-| `RULES.md` | Coding rules, git workflow, commit conventions |
-| `SCRIPTS.md` | Scripts reference: maintenance, hooks, testing |
+`CLAUDE.md` is the source of truth. `AGENTS.md` and `GEMINI.md` must remain
+symlinks to this file.

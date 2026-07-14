@@ -1,5 +1,5 @@
 # =============================================================================
-# .cargo/config.toml — Cargo workspace configuration for rustscale
+# .cargo/config.toml — Cargo workspace configuration for tailscale-rmcp
 #
 # Most build settings (linker, profile tuning, jobs) live in the developer's
 # ~/.cargo/config.toml. This file only adds workspace-local settings that the
@@ -14,4 +14,3 @@
 # The `cargo xtask` convention: `cargo xtask <cmd>` delegates to the xtask crate.
 # See: https://github.com/matklad/cargo-xtask
 xtask = "run --package xtask --"
-

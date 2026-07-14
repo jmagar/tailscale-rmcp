@@ -4,9 +4,10 @@ use lab_auth::AuthContext;
 use rmcp::{
     model::{
         CallToolRequestParams, CallToolResult, Content, GetPromptRequestParams, GetPromptResult,
-        Implementation, ListPromptsResult, ListResourcesResult, ListToolsResult,
+        Implementation, ListPromptsResult, ListResourcesResult, ListToolsResult, Meta,
         PaginatedRequestParams, RawResource, ReadResourceRequestParams, ReadResourceResult,
         Resource, ResourceContents, ServerCapabilities, ServerInfo, Tool, ToolAnnotations,
+        ToolExecution,
     },
     service::RequestContext,
     transport::streamable_http_server::{
@@ -14,11 +15,13 @@ use rmcp::{
     },
     ErrorData, RoleServer, ServerHandler,
 };
-use serde_json::{Map, Value};
+use serde_json::{json, Map, Value};
 
 use crate::{config::McpConfig, tailscale::TailscaleApiError};
 
-use super::{prompts, schemas::tool_definitions, tools::execute_tool, AppState, AuthPolicy};
+use super::{
+    metadata, prompts, schemas::tool_definitions, tools::execute_tool, AppState, AuthPolicy,
+};
 
 const READ_SCOPE: &str = "tailscale:read";
 const WRITE_SCOPE: &str = "tailscale:write";
@@ -152,7 +155,8 @@ impl ServerHandler for TailscaleRmcpServer {
             text,
             SCHEMA_RESOURCE_URI,
         )
-        .with_mime_type("application/json")]))
+        .with_mime_type("application/json")
+        .with_meta(resource_content_meta())]))
     }
 
     // ── prompts ───────────────────────────────────────────────────────────────
@@ -192,6 +196,7 @@ impl ServerHandler for TailscaleRmcpServer {
             )
             .with_title("Tailscale RMCP")
             .with_description(env!("CARGO_PKG_DESCRIPTION"))
+            .with_icons(metadata::icons())
             .with_website_url(env!("CARGO_PKG_HOMEPAGE")),
         )
         .with_instructions(
@@ -233,14 +238,41 @@ pub fn streamable_http_service(
 const SCHEMA_RESOURCE_URI: &str = "tailscale://schema/mcp-tool";
 
 fn schema_resource() -> Resource {
-    Resource::new(
-        RawResource::new(SCHEMA_RESOURCE_URI, "tailscale tool schema")
-            .with_title("Tailscale Tool Schema")
-            .with_description(
-                "JSON schema for the tailscale MCP tool and its action-based parameters",
-            )
-            .with_mime_type("application/json"),
-        None,
+    let size = serde_json::to_vec_pretty(&tool_definitions())
+        .ok()
+        .and_then(|bytes| u32::try_from(bytes.len()).ok());
+    let mut raw = RawResource::new(SCHEMA_RESOURCE_URI, "tailscale tool schema")
+        .with_title("Tailscale Tool Schema")
+        .with_description("JSON schema for the tailscale MCP tool and its action-based parameters")
+        .with_mime_type("application/json")
+        .with_icons(metadata::icons())
+        .with_meta(resource_meta());
+    if let Some(size) = size {
+        raw = raw.with_size(size);
+    }
+    Resource::new(raw, None)
+}
+
+fn resource_meta() -> Meta {
+    metadata::meta(
+        "resource",
+        json!({
+            "uri": SCHEMA_RESOURCE_URI,
+            "resource": "mcp tool schema",
+            "content": "current tailscale tool definition list",
+            "mimeType": "application/json"
+        }),
+    )
+}
+
+fn resource_content_meta() -> Meta {
+    metadata::meta(
+        "resourceContent",
+        json!({
+            "uri": SCHEMA_RESOURCE_URI,
+            "resource": "mcp tool schema",
+            "serialization": "pretty-json"
+        }),
     )
 }
 
@@ -296,6 +328,32 @@ fn rmcp_tool_from_json(value: Value) -> Result<Tool, ErrorData> {
             parsed.open_world_hint = annotations.get("openWorldHint").and_then(Value::as_bool);
             parsed
         });
+    tool.execution = value
+        .get("execution")
+        .cloned()
+        .map(|execution| {
+            serde_json::from_value::<ToolExecution>(execution).map_err(|e| {
+                ErrorData::internal_error(
+                    format!("tool definition has invalid execution: {e}"),
+                    None,
+                )
+            })
+        })
+        .transpose()?;
+    tool.icons = value
+        .get("icons")
+        .cloned()
+        .map(|icons| {
+            serde_json::from_value(icons).map_err(|e| {
+                ErrorData::internal_error(format!("tool definition has invalid icons: {e}"), None)
+            })
+        })
+        .transpose()?;
+    tool.meta = value
+        .get("_meta")
+        .and_then(Value::as_object)
+        .cloned()
+        .map(Meta);
     Ok(tool)
 }
 
@@ -580,6 +638,52 @@ fn extract_origin(url: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rmcp::model::TaskSupport;
+
+    #[test]
+    fn advertised_surfaces_include_icons_meta_and_execution_metadata() {
+        let tools = rmcp_tool_definitions().expect("tool definitions should parse");
+        let tool = tools
+            .iter()
+            .find(|tool| tool.name == "tailscale")
+            .expect("tailscale tool should be advertised");
+        assert!(tool.icons.as_ref().is_some_and(|icons| !icons.is_empty()));
+        assert!(tool
+            .meta
+            .as_ref()
+            .is_some_and(|meta| meta.0.contains_key(metadata::META_NAMESPACE)));
+        assert_eq!(
+            tool.execution
+                .as_ref()
+                .and_then(|execution| execution.task_support),
+            Some(TaskSupport::Forbidden)
+        );
+
+        let resource = schema_resource();
+        assert!(resource
+            .raw
+            .icons
+            .as_ref()
+            .is_some_and(|icons| !icons.is_empty()));
+        assert!(resource
+            .raw
+            .meta
+            .as_ref()
+            .is_some_and(|meta| meta.0.contains_key(metadata::META_NAMESPACE)));
+        assert!(resource.raw.size.is_some_and(|size| size > 0));
+
+        let prompts = prompts::list_prompts();
+        let prompt = prompts
+            .prompts
+            .iter()
+            .find(|prompt| prompt.name == "network_status")
+            .expect("network_status prompt should be advertised");
+        assert!(prompt.icons.as_ref().is_some_and(|icons| !icons.is_empty()));
+        assert!(prompt
+            .meta
+            .as_ref()
+            .is_some_and(|meta| meta.0.contains_key(metadata::META_NAMESPACE)));
+    }
 
     #[test]
     fn success_tool_results_return_envelope() {

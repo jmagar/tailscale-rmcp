@@ -173,7 +173,8 @@ async fn resolve_auth_policy(config: &Config) -> Result<AuthPolicy> {
             .default_scope("tailscale:read")
             .resource_path("/mcp")
             .enable_dynamic_registration(true)
-            .build_from_sources(std::env::vars())
+            .disable_static_token_with_oauth(config.mcp.auth.disable_static_token_with_oauth)
+            .build_from_sources(auth_source_vars(config))
             .map_err(|e| anyhow::anyhow!("auth config error: {e}"))?;
 
         let auth_state = lab_auth::state::AuthState::new(auth_config)
@@ -187,6 +188,88 @@ async fn resolve_auth_policy(config: &Config) -> Result<AuthPolicy> {
 
     // Bearer token mode (default)
     Ok(AuthPolicy::Mounted { auth_state: None })
+}
+
+fn auth_source_vars(config: &Config) -> Vec<(String, String)> {
+    let auth = &config.mcp.auth;
+    let mut vars = vec![
+        (
+            "TAILSCALE_MCP_AUTH_MODE".to_string(),
+            match auth.mode {
+                tailscale_rmcp::config::AuthMode::Bearer => "bearer",
+                tailscale_rmcp::config::AuthMode::OAuth => "oauth",
+            }
+            .to_string(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_ADMIN_EMAIL".to_string(),
+            auth.admin_email.clone(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_SQLITE_PATH".to_string(),
+            auth.sqlite_path.clone(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_KEY_PATH".to_string(),
+            auth.key_path.clone(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_ACCESS_TOKEN_TTL_SECS".to_string(),
+            auth.access_token_ttl_secs.to_string(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_REFRESH_TOKEN_TTL_SECS".to_string(),
+            auth.refresh_token_ttl_secs.to_string(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_CODE_TTL_SECS".to_string(),
+            auth.auth_code_ttl_secs.to_string(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_REGISTER_REQUESTS_PER_MINUTE".to_string(),
+            auth.register_rpm.to_string(),
+        ),
+        (
+            "TAILSCALE_MCP_AUTH_AUTHORIZE_REQUESTS_PER_MINUTE".to_string(),
+            auth.authorize_rpm.to_string(),
+        ),
+    ];
+    push_optional_var(
+        &mut vars,
+        "TAILSCALE_MCP_PUBLIC_URL",
+        auth.public_url.as_deref(),
+    );
+    push_optional_var(
+        &mut vars,
+        "TAILSCALE_MCP_GOOGLE_CLIENT_ID",
+        auth.google_client_id.as_deref(),
+    );
+    push_optional_var(
+        &mut vars,
+        "TAILSCALE_MCP_GOOGLE_CLIENT_SECRET",
+        auth.google_client_secret.as_deref(),
+    );
+    push_list_var(
+        &mut vars,
+        "TAILSCALE_MCP_AUTH_ALLOWED_REDIRECT_URIS",
+        &auth.allowed_client_redirect_uris,
+    );
+
+    // Real environment wins over config.toml-derived defaults.
+    vars.extend(std::env::vars());
+    vars
+}
+
+fn push_optional_var(vars: &mut Vec<(String, String)>, key: &str, value: Option<&str>) {
+    if let Some(value) = value {
+        vars.push((key.to_string(), value.to_string()));
+    }
+}
+
+fn push_list_var(vars: &mut Vec<(String, String)>, key: &str, values: &[String]) {
+    if !values.is_empty() {
+        vars.push((key.to_string(), values.join(",")));
+    }
 }
 
 fn print_usage() {

@@ -1,5 +1,7 @@
 use serde_json::{json, Value};
 
+use super::metadata;
+
 pub(super) const TAILSCALE_ACTIONS: &[&str] = &[
     "devices",
     "device",
@@ -18,6 +20,7 @@ pub(super) fn tool_definitions() -> Vec<Value> {
         "name": "tailscale",
         "title": "Tailscale",
         "description": "Query and manage your Tailscale network via the Tailscale REST API. Use action=help for documentation.",
+        "icons": metadata::icons_json(),
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -90,12 +93,29 @@ pub(super) fn tool_definitions() -> Vec<Value> {
             },
             "required": ["ok", "data", "error"]
         },
+        "execution": {
+            "taskSupport": "forbidden"
+        },
         "annotations": {
             "title": "Tailscale",
             "readOnlyHint": false,
             "destructiveHint": true,
             "idempotentHint": false,
             "openWorldHint": true
-        }
+        },
+        "_meta": metadata::meta_json(
+            "tool",
+            json!({
+                "tool": "tailscale",
+                "resultContract": "{ ok, data, error }",
+                "readOnlyActions": ["devices", "device", "device_routes", "keys", "acl", "dns", "users"],
+                "mutatingActions": ["authorize_device"],
+                "destructiveActions": ["delete_device"],
+                "metaActions": ["help"],
+                "requiresConfirmation": ["delete_device"],
+                "upstream": "https://api.tailscale.com/api/v2",
+                "credentialEnv": "TAILSCALE_API_KEY"
+            })
+        )
     })]
 }

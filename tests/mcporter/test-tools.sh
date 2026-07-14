@@ -23,11 +23,11 @@
 #
 # Environment:
 #   TAILSCALE_MCP_HOST      MCP server host (default: localhost)
-#   TAILSCALE_MCP_PORT      MCP server port (default: 7575)
+#   TAILSCALE_MCP_PORT      MCP server port (default: 40040)
 #   TAILSCALE_MCP_TOKEN     Bearer token (optional if no_auth=true)
 #   TAILSCALE_TEST_DEVICE_ID  Device ID for device/device_routes tests (optional)
 #
-# Credentials sourced from ~/.claude-homelab/.env if present.
+# Credentials sourced from ~/.tailscale-mcp/.env if present.
 #
 # Usage:
 #   ./tests/mcporter/test-tools.sh [--timeout-ms N] [--parallel] [--verbose]
@@ -53,7 +53,7 @@ readonly PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/../.." && pwd -P)"
 readonly SCRIPT_NAME="$(basename -- "${BASH_SOURCE[0]}")"
 readonly TS_START="$(date +%s%N)"
 readonly LOG_FILE="${TMPDIR:-/tmp}/${SCRIPT_NAME%.sh}.$(date +%Y%m%d-%H%M%S).log"
-readonly ENV_FILE="${HOME}/.claude-homelab/.env"
+readonly ENV_FILE="${HOME}/.tailscale-mcp/.env"
 
 # Colours (disabled automatically when stdout is not a terminal)
 if [[ -t 1 ]]; then
@@ -161,7 +161,7 @@ load_env() {
   if [[ "${host}" == "0.0.0.0" ]]; then
     host="localhost"
   fi
-  local port="${TAILSCALE_MCP_PORT:-7575}"
+  local port="${TAILSCALE_MCP_PORT:-40040}"
   MCP_URL="http://${host}:${port}/mcp"
 
   local token="${TAILSCALE_MCP_TOKEN:-}"
@@ -732,8 +732,8 @@ main() {
     log_error ""
     log_error "To diagnose:"
     log_error "  just dev  # or  docker compose up -d"
-    log_error "  curl http://localhost:7575/health"
-    log_error "  curl -X POST http://localhost:7575/mcp \\"
+    log_error "  curl http://localhost:40040/health"
+    log_error "  curl -X POST http://localhost:40040/mcp \\"
     log_error "    -H 'Content-Type: application/json' \\"
     log_error "    -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{}}'"
     exit 2

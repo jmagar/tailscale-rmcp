@@ -1,11 +1,10 @@
-# Technology Stack Documentation -- syslog-mcp
+# Stack Docs
 
-Reference documentation for the technology choices, architecture, and prerequisites.
+This folder summarizes the implementation stack for `tailscale-rmcp`.
 
-## File index
+- `ARCH.md` - request/data flow
+- `TECH.md` - dependency choices
+- `PRE-REQS.md` - local prerequisites
 
-| File | Purpose |
-| --- | --- |
-| `ARCH.md` | Architecture overview: dual-port design, data flow, module structure |
-| `PRE-REQS.md` | Prerequisites: Rust toolchain, Docker, system dependencies |
-| `TECH.md` | Technology choices: crate selection rationale, SQLite vs alternatives |
+`CLAUDE.md` is the source of truth. `AGENTS.md` and `GEMINI.md` must remain
+symlinks to this file.

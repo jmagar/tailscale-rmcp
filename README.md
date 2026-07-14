@@ -56,7 +56,7 @@ API keys through MCP tool arguments.
 | npm package | `tailscale-rmcp` |
 | npm binary aliases | `tailscale-rmcp`, `rtailscale` |
 | MCP tool | `tailscale` |
-| Config home | `~/.tailscale-rmcp` on hosts, `/data` in containers |
+| Config home | `~/.tailscale-mcp` on hosts, `/data` in containers |
 | Env prefixes | `TAILSCALE_*`, `TAILSCALE_MCP_*`, `TAILSCALE_RMCP_*` for npm launcher controls |
 
 The repo, crate, and npm package use the RMCP family name. The shipped binary is
@@ -294,7 +294,7 @@ of the RMCP family.
 
 ## Configuration
 
-Host installs read `~/.tailscale-rmcp/.env` before loading config. Containers
+Host installs read `~/.tailscale-mcp/.env` before loading config. Containers
 read `/data/.env`. Process environment overrides both.
 
 | Variable | Default | Purpose |
@@ -428,7 +428,7 @@ authenticated gateway.
 
 | Symptom | Check |
 |---|---|
-| `TAILSCALE_API_KEY` is missing | Set it in env or `~/.tailscale-rmcp/.env`. |
+| `TAILSCALE_API_KEY` is missing | Set it in env or `~/.tailscale-mcp/.env`. |
 | Device calls return unauthorized | Refresh the API key in Tailscale admin settings. |
 | HTTP `/mcp` returns unauthorized | Set `TAILSCALE_MCP_TOKEN` and send `Authorization: Bearer <token>`. |
 | Stdio client hangs or logs JSON errors | Ensure client config runs `tailscale-rmcp mcp`, not the default HTTP server mode. |

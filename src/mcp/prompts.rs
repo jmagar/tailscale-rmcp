@@ -2,6 +2,9 @@ use rmcp::model::{
     GetPromptRequestParams, GetPromptResult, ListPromptsResult, Prompt, PromptMessage,
     PromptMessageRole,
 };
+use serde_json::json;
+
+use super::metadata;
 
 pub(super) fn list_prompts() -> ListPromptsResult {
     ListPromptsResult {
@@ -10,7 +13,17 @@ pub(super) fn list_prompts() -> ListPromptsResult {
             Some("Check all Tailscale devices and summarize tailnet health."),
             None,
         )
-        .with_title("Network Status")],
+        .with_title("Network Status")
+        .with_icons(metadata::icons())
+        .with_meta(metadata::meta(
+            "prompt",
+            json!({
+                "prompt": "network_status",
+                "recommendedTool": "tailscale",
+                "recommendedActions": ["devices", "device_routes", "acl", "dns"],
+                "purpose": "tailnet health summary"
+            }),
+        ))],
         ..Default::default()
     }
 }

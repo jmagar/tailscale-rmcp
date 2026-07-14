@@ -1,88 +1,33 @@
-# Live Smoke Testing (mcporter) -- syslog-mcp
+# mcporter Smoke Tests
 
-End-to-end verification against a running syslog-mcp server. Complements unit tests in [TESTS.md](TESTS.md).
+The repo mcporter config points at:
 
-## Purpose
-
-`scripts/smoke-test.sh` exercises the full MCP server stack: auth, tool dispatch, and response validation against a live syslog-mcp instance.
-
-## Location
-
-```
-scripts/smoke-test.sh       # Full smoke test
-tests/test_live.sh          # Extended live integration tests
-tests/mcporter/test-tools.sh  # mcporter-based tool tests
+```text
+https://ts.tootie.tv/mcp
 ```
 
-## Running
+List tools:
 
 ```bash
-# Ensure server is running
-just up
-
-# Run smoke tests
-just test-live
-# or: bash scripts/smoke-test.sh
+mcporter tools --config config/mcporter.json tailscale-rmcp
 ```
 
-## mcporter configuration
-
-mcporter config is at `config/mcporter.json`:
-
-```json
-{
-  "servers": {
-    "syslog-mcp": {
-      "transport": "http",
-      "url": "http://localhost:3100/mcp"
-    }
-  }
-}
-```
-
-## Manual mcporter commands
+Read-only smoke:
 
 ```bash
-# List available tools
-mcporter list syslog --config config/mcporter.json
-
-# Call actions through the single syslog tool
-mcporter call --config config/mcporter.json syslog.syslog action=stats
-mcporter call --config config/mcporter.json syslog.syslog action=tail n=10
-mcporter call --config config/mcporter.json syslog.syslog action=search query=error limit=5
-mcporter call --config config/mcporter.json syslog.syslog action=hosts
-mcporter call --config config/mcporter.json syslog.syslog action=errors
-mcporter call --config config/mcporter.json syslog.syslog action=status
-mcporter call --config config/mcporter.json syslog.syslog action=help
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=devices
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=keys
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=acl
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=dns
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=users
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=help
 ```
 
-## Test assertions
+Parameterized read-only actions need a real device ID:
 
-The smoke test validates:
-- Health endpoint returns `{"status": "ok"}`
-- The single `syslog` tool is listed
-- `syslog search` returns expected `count` and `logs` fields
-- `syslog tail` respects the `n` parameter
-- `syslog errors` returns `summary` array
-- `syslog hosts` returns `hosts` array
-- `syslog correlate` returns `hosts` grouped by hostname
-- `syslog stats` returns numeric fields (total_logs, total_hosts, etc.)
-- `syslog status` returns DB health and runtime/OTLP observability fields
-- `syslog help` returns non-empty markdown text
-
-## Failure output
-
-```
-  PASS: health endpoint returns ok
-  PASS: syslog search returns count field
-  FAIL: syslog tail count should be <= 10, got 50
-  ---
-  30 assertions: 29 PASS, 1 FAIL
+```bash
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=device id="$TAILSCALE_TEST_DEVICE_ID"
+mcporter call --config config/mcporter.json tailscale-rmcp.tailscale action=device_routes id="$TAILSCALE_TEST_DEVICE_ID"
 ```
 
-Exit code is non-zero if any assertion fails.
-
-## See also
-
-- [TESTS.md](TESTS.md) -- unit and integration tests
-- [CICD.md](CICD.md) -- CI workflow configuration
+Do not include `authorize_device` or `delete_device` in default read-only smoke.

@@ -4,6 +4,7 @@ use lab_auth::AuthLayer;
 
 use crate::{app::TailscaleService, config::McpConfig, observability::Counters};
 
+mod metadata;
 mod prompts;
 mod rmcp_server;
 mod routes;

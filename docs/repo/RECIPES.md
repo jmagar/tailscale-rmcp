@@ -1,54 +1,38 @@
-# Justfile Recipes -- syslog-mcp
+# Recipes
 
-Run `just --list` to see all available recipes.
+## Build
 
-## Development
+```bash
+cargo build --release
+```
 
-| Recipe | Command | Description |
-| --- | --- | --- |
-| `just dev` | `cargo run` | Start dev server |
-| `just build` | `cargo build` | Debug build |
-| `just release` | `cargo build --release` | Release build |
-| `just check` | `cargo check` | Type check without building |
-| `just lint` | `cargo clippy -- -D warnings` | Lint with zero-warning policy |
-| `just fmt` | `cargo fmt` | Auto-format code |
-| `just test` | `cargo test` | Run test suite |
-| `just clean` | `cargo clean` | Remove build artifacts |
+## Run loopback HTTP
 
-## Docker
+```bash
+TAILSCALE_MCP_HOST=127.0.0.1 ./target/release/rtailscale serve
+```
 
-| Recipe | Command | Description |
-| --- | --- | --- |
-| `just docker-build` | `docker build -t syslog-mcp .` | Build Docker image |
-| `just up` | `docker compose up -d` | Start containers |
-| `just down` | `docker compose down` | Stop containers |
-| `just restart` | `docker compose restart` | Restart containers |
-| `just logs` | `docker compose logs -f` | Tail container logs |
+## Run stdio
 
-## Testing
+```bash
+./target/release/rtailscale mcp
+```
 
-| Recipe | Command | Description |
-| --- | --- | --- |
-| `just health` | `curl -sf http://localhost:3100/health \| jq .` | Health check |
-| `just test-live` | `bash tests/test_live.sh` | Run live smoke tests |
+## Verify package
 
-## Setup and security
+```bash
+npm --prefix packages/tailscale-rmcp run check
+npm pack --prefix packages/tailscale-rmcp --dry-run --json
+```
 
-| Recipe | Command | Description |
-| --- | --- | --- |
-| `just setup` | `cp -n .env.example .env` | Initialize .env file |
-| `just gen-token` | `openssl rand -hex 32` | Generate bearer token |
-| `just validate-skills` | Check SKILL.md exists | Verify skill files |
+## Validate registry manifest
 
-## Publishing
+```bash
+mcp-publisher validate server.json
+```
 
-| Recipe | Command | Description |
-| --- | --- | --- |
-| `just publish [bump]` | Bump, tag, push | Release with major/minor/patch bump |
+## Refresh references
 
-The `publish` recipe:
-1. Verifies clean `main` branch
-2. Bumps version in Cargo.toml and all plugin manifests
-3. Commits as `release: vX.Y.Z`
-4. Tags `vX.Y.Z`
-5. Pushes to origin (triggers CI/CD publish workflows)
+```bash
+scripts/refresh-docs.sh
+```

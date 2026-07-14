@@ -188,6 +188,7 @@ impl Config {
         // MCP server env overrides (TAILSCALE_MCP_* prefix)
         env_str("TAILSCALE_MCP_HOST", &mut config.mcp.host);
         env_parse("TAILSCALE_MCP_PORT", &mut config.mcp.port)?;
+        env_str("TAILSCALE_MCP_SERVER_NAME", &mut config.mcp.server_name);
         env_bool("TAILSCALE_MCP_NO_AUTH", &mut config.mcp.no_auth)?;
         env_opt_str("TAILSCALE_MCP_TOKEN", &mut config.mcp.api_token);
         env_list("TAILSCALE_MCP_ALLOWED_HOSTS", &mut config.mcp.allowed_hosts);

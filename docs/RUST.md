@@ -1,45 +1,27 @@
----
-title: "Rust Build Setup"
-doc_type: "guide"
-status: "active"
-owner: "tailscale-rmcp"
-audience:
-  - "contributors"
-  - "agents"
-scope: "service"
-source_of_truth: false
-upstream_refs:
-  - "https://github.com/jmagar/soma/blob/main/docs/RUST.md"
-last_reviewed: "2026-07-13"
----
+# Rust Development
 
-# Rust Build Setup
+Minimum supported Rust version: 1.86.
 
-This repo follows the build conventions of the rmcp server family.
-The canonical reference is [soma/docs/RUST.md](https://github.com/jmagar/soma/blob/main/docs/RUST.md).
-
-## System prerequisites
-
-- Rust stable ≥ 1.86 (`rustup update stable`)
-- `clang` and `mold` for fast Linux builds: `apt install clang mold`
-- `just` command runner (optional): `cargo install just`
-
-## Global Cargo config
-
-Build performance depends on `~/.cargo/config.toml` on the developer's machine.
-See [soma/docs/RUST.md](https://github.com/jmagar/soma/blob/main/docs/RUST.md)
-for the expected config (global sccache wrapper, mold linker, profile settings,
-and dynamic Cargo job allocation).
-
-## Local `.cargo/config.toml`
-
-This repo's `.cargo/config.toml` contains only the xtask alias:
-
-```toml
-[alias]
-xtask = "run --package xtask --"
+```bash
+cargo fmt --check
+cargo test --locked
+cargo clippy -- -D warnings
+cargo build --release
 ```
 
-No other per-repo overrides are needed. Profile settings, sccache, dynamic jobs,
-and the mold linker are inherited from the global config. Refresh repo/plugin
-binaries explicitly with `just sync-bin`.
+Release binary:
+
+```text
+target/release/rtailscale
+```
+
+The crate uses RMCP 1.6 with Streamable HTTP server and stdio transport
+features enabled. The source layout follows the RMCP family rule that `cli.rs`
+and `mcp/tools.rs` are thin shims over `TailscaleService`.
+
+For musl builds on this host, clear the global sccache wrapper if it cannot find
+the target standard library:
+
+```bash
+RUSTC_WRAPPER= cargo build --release --target x86_64-unknown-linux-musl
+```
