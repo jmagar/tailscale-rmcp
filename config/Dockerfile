@@ -20,13 +20,13 @@ RUN --mount=type=cache,id=tailscale-rmcp-cargo-registry,target=/usr/local/cargo/
     --mount=type=cache,id=tailscale-rmcp-cargo-git,target=/usr/local/cargo/git,sharing=locked \
     --mount=type=cache,id=tailscale-rmcp-cargo-target,target=/app/target,sharing=locked \
     touch src/main.rs && cargo build --release --locked -p tailscale-rmcp && \
-    cp target/release/rtailscale /usr/local/bin/tailscale-mcp
+    cp target/release/rtailscale /usr/local/bin/rtailscale
 
 # Runtime image
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y ca-certificates curl gosu && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/local/bin/tailscale-mcp /usr/local/bin/tailscale-mcp
+COPY --from=builder /usr/local/bin/rtailscale /usr/local/bin/rtailscale
 
 # Create unprivileged service user and data directory
 RUN groupadd --gid 1000 tailscale-rmcp && \
