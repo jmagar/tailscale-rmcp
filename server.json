@@ -7,7 +7,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://ts.tootie.tv/mcp",
+      "url": "https://ts.dinglebear.ai/mcp",
       "headers": [
         {
           "name": "Authorization",
