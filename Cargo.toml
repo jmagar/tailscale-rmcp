@@ -9,8 +9,8 @@ edition = "2021"
 rust-version = "1.86"
 categories = ["command-line-utilities", "development-tools"]
 keywords = ["mcp", "tailscale", "tailnet", "networking", "rmcp"]
-repository = "https://github.com/jmagar/tailscale-rmcp"
-homepage = "https://github.com/jmagar/tailscale-rmcp#readme"
+repository = "https://github.com/jmagar/rtailscale"
+homepage = "https://github.com/jmagar/rtailscale#readme"
 description = "Rust MCP server and CLI for Tailscale tailnet operations across devices, users, keys, and policy workflows."
 autobins = false
 

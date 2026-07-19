@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${TAILSCALE_RMCP_REPO:-jmagar/tailscale-rmcp}"
+REPO="${TAILSCALE_RMCP_REPO:-jmagar/rtailscale}"
 INSTALL_DIR="${INSTALL_DIR:-${HOME}/.local/bin}"
 VERSION="${TAILSCALE_RMCP_VERSION:-latest}"
 RELEASE_BASE_URL="${TAILSCALE_RMCP_RELEASE_BASE_URL:-}"
@@ -14,7 +14,7 @@ Install rtailscale from GitHub Releases.
 Environment:
   INSTALL_DIR      Destination directory (default: ~/.local/bin)
   TAILSCALE_RMCP_VERSION Release tag such as v0.1.1 (default: latest)
-  TAILSCALE_RMCP_REPO    GitHub repo owner/name (default: jmagar/tailscale-rmcp)
+  TAILSCALE_RMCP_REPO    GitHub repo owner/name (default: jmagar/rtailscale)
 USAGE
 }
 

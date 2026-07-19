@@ -34,7 +34,7 @@ function releaseVersion(env = process.env) {
 }
 
 function releaseBaseUrl(env = process.env) {
-  const repo = env.TAILSCALE_RMCP_REPO || "jmagar/tailscale-rmcp";
+  const repo = env.TAILSCALE_RMCP_REPO || "jmagar/rtailscale";
   return env.TAILSCALE_RMCP_RELEASE_BASE_URL || `https://github.com/${repo}/releases/download`;
 }
 

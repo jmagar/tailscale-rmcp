@@ -4,7 +4,7 @@
   "author": {
     "name": "jmagar"
   },
-  "repository": "https://github.com/jmagar/tailscale-rmcp",
+  "repository": "https://github.com/jmagar/rtailscale",
   "license": "MIT",
   "keywords": [
     "tailscale",
