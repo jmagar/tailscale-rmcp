@@ -22,8 +22,8 @@ services:
     <<: *common-service
     # Service is named tailscale-mcp (not tailscale) to avoid conflicting with
     # the Tailscale daemon / tailscaled container that may run on the same host.
-    image: ghcr.io/jmagar/tailscale-rmcp:${TAILSCALE_RMCP_VERSION:-latest}
-    container_name: tailscale-mcp
+    image: ghcr.io/jmagar/tailscale-rmcp:latest
+    container_name: rtailscale
     env_file:
       - path: .env
         required: false
@@ -40,7 +40,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 2G
           cpus: '0.5'
 
 networks:
