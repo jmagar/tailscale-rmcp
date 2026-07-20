@@ -3,14 +3,14 @@
   "version": "0.1.3",
   "description": "Node launcher for the Tailscale Rust MCP server and rtailscale CLI for tailnet operations.",
   "license": "MIT",
-  "homepage": "https://github.com/jmagar/tailscale-rmcp#readme",
+  "homepage": "https://github.com/jmagar/rtailscale#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jmagar/tailscale-rmcp.git",
+    "url": "git+https://github.com/jmagar/rtailscale.git",
     "directory": "packages/tailscale-rmcp"
   },
   "bugs": {
-    "url": "https://github.com/jmagar/tailscale-rmcp/issues"
+    "url": "https://github.com/jmagar/rtailscale/issues"
   },
   "bin": {
     "tailscale-rmcp": "bin/rtailscale.js",

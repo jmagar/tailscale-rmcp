@@ -7,7 +7,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://ts.tootie.tv/mcp",
+      "url": "https://ts.dinglebear.ai/mcp",
       "headers": [
         {
           "name": "Authorization",
@@ -18,9 +18,9 @@
       ]
     }
   ],
-  "websiteUrl": "https://github.com/jmagar/tailscale-rmcp",
+  "websiteUrl": "https://github.com/jmagar/rtailscale",
   "repository": {
-    "url": "https://github.com/jmagar/tailscale-rmcp",
+    "url": "https://github.com/jmagar/rtailscale",
     "source": "github",
     "id": "1238227291"
   },
@@ -74,8 +74,8 @@
           "format": "string",
           "isRequired": false,
           "isSecret": false,
-          "default": "jmagar/tailscale-rmcp",
-          "placeholder": "jmagar/tailscale-rmcp"
+          "default": "jmagar/rtailscale",
+          "placeholder": "jmagar/rtailscale"
         },
         {
           "name": "TAILSCALE_RMCP_RELEASE_BASE_URL",
@@ -109,7 +109,7 @@
       },
       "buildInfo": {
         "version": "0.1.3",
-        "repository": "https://github.com/jmagar/tailscale-rmcp"
+        "repository": "https://github.com/jmagar/rtailscale"
       }
     }
   }

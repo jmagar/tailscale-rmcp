@@ -2,7 +2,7 @@
 # install.sh — one-line installer for tailscale-rmcp (Tailscale MCP server)
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/jmagar/tailscale-rmcp/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/jmagar/rtailscale/main/install.sh | bash
 #   # or locally:
 #   bash install.sh
 #
@@ -30,7 +30,7 @@ BINARY_NAME="${BINARY_NAME:-tailscale}"
 BINARY_PATH="${INSTALL_DIR}/${BINARY_NAME}"
 DATA_DIR="${HOME}/.tailscale-mcp"
 ENV_FILE="${DATA_DIR}/.env"
-REPO="jmagar/tailscale-rmcp"
+REPO="jmagar/rtailscale"
 MCP_PORT="${TAILSCALE_MCP_PORT:-7575}"
 
 # Colours
