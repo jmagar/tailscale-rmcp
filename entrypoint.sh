@@ -7,12 +7,11 @@
 # Defense in numbers: validate every assumption before exec'ing the service.
 # Fail fast with clear messages rather than starting in a broken state.
 #
-# The container binary is named 'tailscale-mcp' to avoid conflicting with any
-# Tailscale CLI tooling that might be mounted into the container.
+# The container binary matches the canonical CLI name.
 set -e
 
 DATA_DIR="${DATA_DIR:-/data}"
-SERVICE_NAME="tailscale-mcp"
+SERVICE_NAME="rtailscale"
 BINARY="/usr/local/bin/${SERVICE_NAME}"
 
 # ── 1. Binary exists and is executable ───────────────────────────────────────
