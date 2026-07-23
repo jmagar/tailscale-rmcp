@@ -1,20 +1,3 @@
 {
-  "mcpServers": {
-    "tailscale": {
-      "command": "npx",
-      "args": ["-y", "tailscale-rmcp", "mcp"],
-      "env": {
-        "TAILSCALE_API_KEY": "${user_config.tailscale_api_key}",
-        "TAILSCALE_TAILNET": "${user_config.tailscale_tailnet}",
-        "TAILSCALE_ALLOW_DESTRUCTIVE": "${user_config.allow_destructive}",
-        "TAILSCALE_MCP_TOKEN": "${user_config.api_token}",
-        "TAILSCALE_MCP_NO_AUTH": "${user_config.no_auth}",
-        "TAILSCALE_MCP_AUTH_MODE": "${user_config.auth_mode}",
-        "TAILSCALE_MCP_PUBLIC_URL": "${user_config.public_url}",
-        "TAILSCALE_MCP_GOOGLE_CLIENT_ID": "${user_config.google_client_id}",
-        "TAILSCALE_MCP_GOOGLE_CLIENT_SECRET": "${user_config.google_client_secret}",
-        "TAILSCALE_MCP_AUTH_ADMIN_EMAIL": "${user_config.auth_admin_email}"
-      }
-    }
-  }
+  "mcpServers": {}
 }
