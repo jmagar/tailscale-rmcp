@@ -1,6 +1,6 @@
 {
   "name": "tailscale-rmcp",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Node launcher for the Tailscale Rust MCP server and rtailscale CLI for tailnet operations.",
   "license": "MIT",
   "homepage": "https://github.com/jmagar/rtailscale#readme",
@@ -55,7 +55,7 @@
     "http-server"
   ],
   "mcpName": "ai.dinglebear/tailscale-rmcp",
-  "binaryVersion": "0.1.3",
+  "binaryVersion": "0.1.4",
   "author": {
     "name": "dinglebear.ai",
     "url": "https://dinglebear.ai"
